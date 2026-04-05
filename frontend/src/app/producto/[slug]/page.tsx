@@ -67,8 +67,10 @@ function ProductDescription({ text }: { text: string }) {
 
   const blocks: Block[] = [];
   let currentBullets: string[] | null = null;
+  let lastBlockWasBullets = false;
 
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const isBullet = /^[•\-\*]\s*/.test(line);
     if (isBullet) {
       const content = line.replace(/^[•\-\*]\s*/, '');
@@ -78,30 +80,31 @@ function ProductDescription({ text }: { text: string }) {
       if (currentBullets) {
         blocks.push({ type: 'bullets', items: currentBullets });
         currentBullets = null;
+        lastBlockWasBullets = true;
       }
-      // Short lines without punctuation at the end → likely a heading/section title
-      const isHeading = line.length < 60 && !/[.,;:]$/.test(line) && blocks.length > 0;
+      const looksLikeHeading = line.length < 60 && !/[.,;:]$/.test(line);
+      const isFirstLine = blocks.length === 0;
+      const nextIsBullet = i + 1 < lines.length && /^[•\-\*]\s*/.test(lines[i + 1]);
+      const isHeading = looksLikeHeading && (isFirstLine || nextIsBullet || lastBlockWasBullets);
       blocks.push({ type: isHeading ? 'heading' : 'paragraph', text: line });
+      lastBlockWasBullets = false;
     }
   }
   if (currentBullets) blocks.push({ type: 'bullets', items: currentBullets });
 
   return (
-    <div className="text-neutral-500 text-sm mb-4 space-y-3">
+    <div className="text-neutral-500 text-[13.5px] leading-[1.55] tracking-[0.01em]">
       {blocks.map((block, i) => {
         if (block.type === 'heading')
-          return <p key={i} className="font-medium text-neutral-700 mt-1">{block.text}</p>;
+          return <p key={i} className="font-display text-[14.5px] text-neutral-700 mt-4 first:mt-0 mb-0.5 tracking-normal">{block.text}</p>;
         if (block.type === 'paragraph')
-          return <p key={i}>{block.text}</p>;
+          return <p key={i} className="text-neutral-500">{block.text}</p>;
         return (
-          <ul key={i} className="space-y-1.5 pl-1">
+          <div key={i} className="mb-1 pl-0.5">
             {block.items.map((item, j) => (
-              <li key={j} className="flex items-start gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-neutral-400 shrink-0" />
-                <span>{item}</span>
-              </li>
+              <p key={j} className="text-neutral-500 flex items-baseline gap-2.5"><span className="text-brand-accent text-[8px] opacity-70">&#9672;</span>{item}</p>
             ))}
-          </ul>
+          </div>
         );
       })}
     </div>
@@ -351,8 +354,7 @@ export default function ProductoDetallePage() {
 
         {/* Info */}
         <div>
-          <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-2">{producto.name}</h1>
-          <ProductDescription text={producto.desc} />
+          <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-3">{producto.name}</h1>
           <p className="text-2xl font-semibold text-neutral-900 mb-6">{formatoPrecio(precioActual)}</p>
 
           {/* Size selector */}
@@ -455,6 +457,13 @@ export default function ProductoDetallePage() {
           >
             {ctaText}
           </button>
+
+          {/* Description */}
+          {producto.desc && (
+            <div className="mt-8 pt-6 border-t border-neutral-200/60">
+              <ProductDescription text={producto.desc} />
+            </div>
+          )}
         </div>
       </div>
     </div>
