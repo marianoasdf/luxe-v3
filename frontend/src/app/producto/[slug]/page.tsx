@@ -55,6 +55,41 @@ function sortTalles(a: TalleOption, b: TalleOption): number {
   return aNorm.localeCompare(bNorm, 'es', { numeric: true, sensitivity: 'base' });
 }
 
+function ProductDescription({ text }: { text: string }) {
+  if (!text) return null;
+
+  // Split by "•" or "\n" to detect bullet items
+  const parts = text.split(/\s*[•]\s*/);
+  const intro = parts[0]?.trim();
+  const bullets = parts.slice(1).map((b) => b.trim()).filter(Boolean);
+
+  if (!bullets.length) {
+    // No bullets — render paragraphs split by newlines
+    const paragraphs = text.split(/\n+/).filter(Boolean);
+    return (
+      <div className="text-neutral-500 text-sm mb-4 space-y-2">
+        {paragraphs.map((p, i) => (
+          <p key={i}>{p}</p>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-neutral-500 text-sm mb-4 space-y-3">
+      {intro && <p>{intro}</p>}
+      <ul className="space-y-1.5 pl-1">
+        {bullets.map((item, i) => (
+          <li key={i} className="flex items-start gap-2">
+            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-neutral-400 shrink-0" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function ProductoDetallePage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -299,7 +334,7 @@ export default function ProductoDetallePage() {
         {/* Info */}
         <div>
           <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-2">{producto.name}</h1>
-          <p className="text-neutral-500 text-sm mb-4">{producto.desc}</p>
+          <ProductDescription text={producto.desc} />
           <p className="text-2xl font-semibold text-neutral-900 mb-6">{formatoPrecio(precioActual)}</p>
 
           {/* Size selector */}
