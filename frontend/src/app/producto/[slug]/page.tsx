@@ -58,34 +58,52 @@ function sortTalles(a: TalleOption, b: TalleOption): number {
 function ProductDescription({ text }: { text: string }) {
   if (!text) return null;
 
-  // Split by "•" or "\n" to detect bullet items
-  const parts = text.split(/\s*[•]\s*/);
-  const intro = parts[0]?.trim();
-  const bullets = parts.slice(1).map((b) => b.trim()).filter(Boolean);
+  const lines = text.split(/\n/).map((l) => l.trim()).filter(Boolean);
 
-  if (!bullets.length) {
-    // No bullets — render paragraphs split by newlines
-    const paragraphs = text.split(/\n+/).filter(Boolean);
-    return (
-      <div className="text-neutral-500 text-sm mb-4 space-y-2">
-        {paragraphs.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
-    );
+  type Block =
+    | { type: 'paragraph'; text: string }
+    | { type: 'heading'; text: string }
+    | { type: 'bullets'; items: string[] };
+
+  const blocks: Block[] = [];
+  let currentBullets: string[] | null = null;
+
+  for (const line of lines) {
+    const isBullet = /^[•\-\*]\s*/.test(line);
+    if (isBullet) {
+      const content = line.replace(/^[•\-\*]\s*/, '');
+      if (!currentBullets) currentBullets = [];
+      currentBullets.push(content);
+    } else {
+      if (currentBullets) {
+        blocks.push({ type: 'bullets', items: currentBullets });
+        currentBullets = null;
+      }
+      // Short lines without punctuation at the end → likely a heading/section title
+      const isHeading = line.length < 60 && !/[.,;:]$/.test(line) && blocks.length > 0;
+      blocks.push({ type: isHeading ? 'heading' : 'paragraph', text: line });
+    }
   }
+  if (currentBullets) blocks.push({ type: 'bullets', items: currentBullets });
 
   return (
     <div className="text-neutral-500 text-sm mb-4 space-y-3">
-      {intro && <p>{intro}</p>}
-      <ul className="space-y-1.5 pl-1">
-        {bullets.map((item, i) => (
-          <li key={i} className="flex items-start gap-2">
-            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-neutral-400 shrink-0" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
+      {blocks.map((block, i) => {
+        if (block.type === 'heading')
+          return <p key={i} className="font-medium text-neutral-700 mt-1">{block.text}</p>;
+        if (block.type === 'paragraph')
+          return <p key={i}>{block.text}</p>;
+        return (
+          <ul key={i} className="space-y-1.5 pl-1">
+            {block.items.map((item, j) => (
+              <li key={j} className="flex items-start gap-2">
+                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-neutral-400 shrink-0" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        );
+      })}
     </div>
   );
 }
