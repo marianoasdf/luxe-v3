@@ -2,17 +2,21 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Luxe - Moda Urbana',
-  description: 'Moda urbana y estilo para todos los días',
+  title: 'Lüxe Argentina — Local Multimarca',
+  description: 'Local multimarca en Concordia, Entre Ríos. Remeras, buzos, camisas, jeans y más. Envíos a todo el país.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
           src="https://sdk.mercadopago.com/js/v2"
           defer
@@ -22,11 +26,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           defer
         />
       </head>
-      <body>
+      <body className="bg-white text-neutral-900 antialiased">
         <AuthProvider>
           <CartProvider>
             <Header />
             <main>{children}</main>
+            <Footer />
+            <WhatsAppButton />
           </CartProvider>
         </AuthProvider>
       </body>

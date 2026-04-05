@@ -90,14 +90,14 @@ export default function AdminEnviosPage() {
   const statusColor = (s: string) => {
     if (s === 'approved' || s === 'completed') return 'bg-green-100 text-green-800';
     if (s === 'pending') return 'bg-yellow-100 text-yellow-800';
-    return 'bg-gray-100 text-gray-800';
+    return 'bg-neutral-100 text-neutral-800';
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Admin de Envíos</h1>
-        <Link href="/admin" className="border rounded-lg px-4 py-2 text-sm hover:bg-gray-100">Ir a Admin Productos</Link>
+        <Link href="/admin" className="border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100">Ir a Admin Productos</Link>
       </div>
 
       <div className="mb-4">
@@ -108,14 +108,14 @@ export default function AdminEnviosPage() {
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 
       <div className="flex justify-end mb-3">
-        <button className="border rounded-lg px-3 py-1 text-sm hover:bg-gray-100" onClick={fetchOrders} disabled={loading}>
+        <button className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={fetchOrders} disabled={loading}>
           {loading ? 'Actualizando…' : 'Actualizar'}
         </button>
       </div>
 
       <div className="overflow-x-auto border rounded-xl">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-neutral-50">
             <tr>
               <th className="px-3 py-2 text-left">#</th>
               <th className="px-3 py-2 text-left">Email</th>
@@ -129,19 +129,19 @@ export default function AdminEnviosPage() {
           </thead>
           <tbody className="divide-y">
             {orders.map((o) => (
-              <tr key={o.id} className="hover:bg-gray-50">
+              <tr key={o.id} className="hover:bg-neutral-50">
                 <td className="px-3 py-2 font-mono">{o.id}</td>
                 <td className="px-3 py-2">{o.email || '-'}</td>
                 <td className="px-3 py-2">{formatoPrecio(o.total)}</td>
                 <td className="px-3 py-2"><span className={`px-2 py-0.5 rounded-full text-xs ${statusColor(o.status)}`}>{o.status}</span></td>
                 <td className="px-3 py-2">
                   <span className="text-xs">{o.envio_tipo || '-'}</span>
-                  {o.envio_estado && <span className="text-xs text-gray-500 ml-1">({o.envio_estado})</span>}
+                  {o.envio_estado && <span className="text-xs text-neutral-500 ml-1">({o.envio_estado})</span>}
                 </td>
                 <td className="px-3 py-2 font-mono text-xs">{o.envio_tracking || '-'}</td>
                 <td className="px-3 py-2 text-xs">{formatDate(o.created_at)}</td>
                 <td className="px-3 py-2 space-x-2">
-                  <button className="text-blue-600 hover:underline text-xs" onClick={() => setSelected(o)}>Ver</button>
+                  <button className="text-neutral-900 hover:underline text-xs" onClick={() => setSelected(o)}>Ver</button>
                   {o.envio_tipo && !o.envio_label_url && (
                     <button className="text-green-700 hover:underline text-xs" onClick={() => genLabel(o.id)} disabled={generating === o.id}>
                       {generating === o.id ? 'Generando…' : 'Gen. etiqueta'}
@@ -156,7 +156,7 @@ export default function AdminEnviosPage() {
               </tr>
             ))}
             {orders.length === 0 && (
-              <tr><td colSpan={8} className="text-center py-6 text-gray-500">Sin órdenes…</td></tr>
+              <tr><td colSpan={8} className="text-center py-6 text-neutral-500">Sin órdenes…</td></tr>
             )}
           </tbody>
         </table>
@@ -168,17 +168,17 @@ export default function AdminEnviosPage() {
           <div className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-bold text-lg">Orden #{selected.id}</h3>
-              <button onClick={() => setSelected(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+              <button onClick={() => setSelected(null)} className="text-neutral-400 hover:text-neutral-600 text-xl">✕</button>
             </div>
             <dl className="space-y-1 text-sm">
-              <div className="flex justify-between"><dt className="text-gray-500">Email</dt><dd>{selected.email || '-'}</dd></div>
-              <div className="flex justify-between"><dt className="text-gray-500">Total</dt><dd>{formatoPrecio(selected.total)}</dd></div>
-              <div className="flex justify-between"><dt className="text-gray-500">Estado</dt><dd>{selected.status}</dd></div>
-              <div className="flex justify-between"><dt className="text-gray-500">Payment ID</dt><dd className="font-mono">{selected.payment_id || '-'}</dd></div>
-              {selected.envio_tipo && <div className="flex justify-between"><dt className="text-gray-500">Envío</dt><dd>{selected.envio_tipo} ({selected.envio_estado || '-'})</dd></div>}
-              {selected.envio_tracking && <div className="flex justify-between"><dt className="text-gray-500">Tracking</dt><dd className="font-mono">{selected.envio_tracking}</dd></div>}
-              {selected.envio_costo != null && <div className="flex justify-between"><dt className="text-gray-500">Costo envío</dt><dd>{formatoPrecio(selected.envio_costo)}</dd></div>}
-              {selected.envio_estimacion && <div className="flex justify-between"><dt className="text-gray-500">Estimación</dt><dd>{selected.envio_estimacion}</dd></div>}
+              <div className="flex justify-between"><dt className="text-neutral-500">Email</dt><dd>{selected.email || '-'}</dd></div>
+              <div className="flex justify-between"><dt className="text-neutral-500">Total</dt><dd>{formatoPrecio(selected.total)}</dd></div>
+              <div className="flex justify-between"><dt className="text-neutral-500">Estado</dt><dd>{selected.status}</dd></div>
+              <div className="flex justify-between"><dt className="text-neutral-500">Payment ID</dt><dd className="font-mono">{selected.payment_id || '-'}</dd></div>
+              {selected.envio_tipo && <div className="flex justify-between"><dt className="text-neutral-500">Envío</dt><dd>{selected.envio_tipo} ({selected.envio_estado || '-'})</dd></div>}
+              {selected.envio_tracking && <div className="flex justify-between"><dt className="text-neutral-500">Tracking</dt><dd className="font-mono">{selected.envio_tracking}</dd></div>}
+              {selected.envio_costo != null && <div className="flex justify-between"><dt className="text-neutral-500">Costo envío</dt><dd>{formatoPrecio(selected.envio_costo)}</dd></div>}
+              {selected.envio_estimacion && <div className="flex justify-between"><dt className="text-neutral-500">Estimación</dt><dd>{selected.envio_estimacion}</dd></div>}
             </dl>
             {selected.items && selected.items.length > 0 && (
               <div className="mt-4">
@@ -193,7 +193,7 @@ export default function AdminEnviosPage() {
             {selected.shipping_address && (
               <div className="mt-4">
                 <h4 className="font-semibold text-sm mb-1">Dirección de envío</h4>
-                <pre className="bg-gray-50 rounded p-2 text-xs overflow-auto">{JSON.stringify(selected.shipping_address, null, 2)}</pre>
+                <pre className="bg-neutral-50 rounded p-2 text-xs overflow-auto">{JSON.stringify(selected.shipping_address, null, 2)}</pre>
               </div>
             )}
           </div>

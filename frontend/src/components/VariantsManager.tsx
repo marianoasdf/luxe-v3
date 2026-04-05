@@ -132,10 +132,10 @@ export default function VariantsManager({ productId, secret, headers, productPri
 
   return (
     <div className="border rounded-lg mt-4">
-      <div className="flex justify-between items-center px-4 py-3 bg-gray-50 rounded-t-lg">
+      <div className="flex justify-between items-center px-4 py-3 bg-neutral-50 rounded-t-lg">
         <h4 className="text-sm font-semibold">Variantes (Color, Talle, Precio, Stock)</h4>
         <button
-          className="text-sm px-3 py-1 border rounded hover:bg-gray-100"
+          className="text-sm px-3 py-1 border rounded hover:bg-neutral-100"
           onClick={() => {
             setExpanded(!expanded);
             if (!expanded && variants.length === 0) fetchVariants();
@@ -149,7 +149,7 @@ export default function VariantsManager({ productId, secret, headers, productPri
         <div className="p-4">
           {error && <div className="bg-red-50 text-red-700 p-2 rounded text-sm mb-3">{error}</div>}
 
-          <form onSubmit={onSubmit} className="mb-6 p-4 border rounded bg-gray-50">
+          <form onSubmit={onSubmit} className="mb-6 p-4 border rounded bg-neutral-50">
             <h5 className="font-medium mb-3">{editingId ? 'Editar variante' : 'Nueva variante'}</h5>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
@@ -210,11 +210,11 @@ export default function VariantsManager({ productId, secret, headers, productPri
               </div>
             </div>
             <div className="flex gap-2 mt-3">
-              <button type="submit" className="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">
+              <button type="submit" className="bg-neutral-900 text-white px-4 py-1.5 rounded text-sm hover:bg-neutral-800">
                 {editingId ? 'Guardar' : 'Crear'}
               </button>
               {editingId && (
-                <button type="button" className="border px-4 py-1.5 rounded text-sm hover:bg-gray-100" onClick={startCreate}>
+                <button type="button" className="border px-4 py-1.5 rounded text-sm hover:bg-neutral-100" onClick={startCreate}>
                   Cancelar
                 </button>
               )}
@@ -223,13 +223,13 @@ export default function VariantsManager({ productId, secret, headers, productPri
 
           <h5 className="font-medium mb-2 text-sm">Lista ({variants.length})</h5>
           {loading ? (
-            <div className="text-gray-500 text-sm">Cargando…</div>
+            <div className="text-neutral-500 text-sm">Cargando…</div>
           ) : variants.length === 0 ? (
-            <div className="text-gray-400 text-sm">Sin variantes creadas</div>
+            <div className="text-neutral-400 text-sm">Sin variantes creadas</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50">
+                <thead className="bg-neutral-50">
                   <tr>
                     <th className="text-left px-3 py-2">Color</th>
                     <th className="text-left px-3 py-2">Talle</th>
@@ -242,13 +242,13 @@ export default function VariantsManager({ productId, secret, headers, productPri
                   {variants.map((v) => {
                     const ov = v.option_values || {};
                     return (
-                      <tr key={v.id} className="border-t hover:bg-gray-50">
+                      <tr key={v.id} className="border-t hover:bg-neutral-50">
                         <td className="px-3 py-2">{ov.color || '-'}</td>
                         <td className="px-3 py-2">{ov.talle || '-'}</td>
                         <td className="px-3 py-2">$ {Number(v.price || productPrice || 0).toFixed(2)}</td>
                         <td className="px-3 py-2">{v.stock}</td>
                         <td className="px-3 py-2 flex gap-1">
-                          <button className="text-blue-600 hover:underline text-sm" onClick={() => startEdit(v)}>
+                          <button className="text-neutral-900 hover:underline text-sm" onClick={() => startEdit(v)}>
                             Editar
                           </button>
                           <button className="text-red-600 hover:underline text-sm" onClick={() => remove(v)}>

@@ -50,13 +50,13 @@ function VerificarContent() {
   }, []);
 
   const bgClass =
-    status === 'success' ? 'bg-green-50 text-green-700' :
-    status === 'error' ? 'bg-red-50 text-red-700' :
-    'bg-blue-50 text-blue-700';
+    status === 'success' ? 'bg-green-50 text-green-700 border-green-100' :
+    status === 'error' ? 'bg-red-50 text-red-700 border-red-100' :
+    'bg-neutral-50 text-neutral-700 border-neutral-100';
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12">
-      <div className={`${bgClass} p-6 rounded-xl`}>{message}</div>
+    <div className="max-w-2xl mx-auto px-4 py-16 md:py-20">
+      <div className={`${bgClass} p-6 border text-sm`}>{message}</div>
     </div>
   );
 }

@@ -217,9 +217,9 @@ export default function ProductoDetallePage() {
     if (imagenSeleccionada >= imagenesGaleria.length) setImagenSeleccionada(0);
   }, [imagenSeleccionada, imagenesGaleria.length]);
 
-  if (loading) return <div className="max-w-7xl mx-auto px-4 py-10 text-gray-500">Cargando…</div>;
-  if (error) return <div className="max-w-7xl mx-auto px-4 py-10 text-red-600">{error}</div>;
-  if (!producto) return <div className="max-w-7xl mx-auto px-4 py-10">Producto no encontrado 😢</div>;
+  if (loading) return <div className="max-w-7xl mx-auto px-4 py-16 text-neutral-500">Cargando…</div>;
+  if (error) return <div className="max-w-7xl mx-auto px-4 py-16 text-red-600">{error}</div>;
+  if (!producto) return <div className="max-w-7xl mx-auto px-4 py-16 text-neutral-500">Producto no encontrado</div>;
 
   const handleAgregar = () => {
     if (colorOptions.length > 0 && !color) { alert('Seleccioná un color para continuar.'); return; }
@@ -266,11 +266,11 @@ export default function ProductoDetallePage() {
         : 'Agregar al carrito';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
-      <div className="grid md:grid-cols-2 gap-8">
+    <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12">
         {/* Gallery */}
         <div>
-          <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 shadow-sm mb-3">
+          <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-3">
             <Image
               src={cdnImage(imagenesGaleria[imagenSeleccionada] || placeholderImg)}
               alt={producto.name}
@@ -284,8 +284,8 @@ export default function ProductoDetallePage() {
               {imagenesGaleria.map((img, idx) => (
                 <button
                   key={idx}
-                  className={`relative w-20 h-20 rounded overflow-hidden border-2 transition ${
-                    imagenSeleccionada === idx ? 'border-gray-900 opacity-100' : 'border-transparent opacity-60 hover:opacity-80'
+                  className={`relative w-20 h-20 overflow-hidden border-2 transition ${
+                    imagenSeleccionada === idx ? 'border-neutral-900 opacity-100' : 'border-transparent opacity-60 hover:opacity-80'
                   }`}
                   onClick={() => setImagenSeleccionada(idx)}
                 >
@@ -298,14 +298,14 @@ export default function ProductoDetallePage() {
 
         {/* Info */}
         <div>
-          <h1 className="text-2xl font-bold mb-2">{producto.name}</h1>
-          <p className="text-gray-600 mb-4">{producto.desc}</p>
-          <p className="text-2xl font-semibold mb-6">{formatoPrecio(precioActual)}</p>
+          <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-2">{producto.name}</h1>
+          <p className="text-neutral-500 text-sm mb-4">{producto.desc}</p>
+          <p className="text-2xl font-semibold text-neutral-900 mb-6">{formatoPrecio(precioActual)}</p>
 
           {/* Size selector */}
           {talleOptions.length > 0 && (
             <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">Talle</label>
+              <label className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">Talle</label>
               <div className="flex flex-wrap gap-2">
                 {talleOptions.map((t) => {
                   const isSelected = talle === t.value;
@@ -314,10 +314,10 @@ export default function ProductoDetallePage() {
                   return (
                     <button
                       key={t.value || 'unico'}
-                      className={`min-w-[56px] px-3 py-1.5 rounded border text-sm transition relative overflow-hidden ${
+                      className={`min-w-[56px] px-3 py-1.5 border text-sm transition relative overflow-hidden ${
                         isSelected
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-900 border-gray-300 hover:border-gray-900'
+                          ? 'bg-neutral-900 text-white border-neutral-900'
+                          : 'bg-white text-neutral-900 border-neutral-300 hover:border-neutral-900'
                       }`}
                       style={{ opacity: isDisabled ? 0.4 : 1 }}
                       onClick={() => handleTalleChange(t.value)}
@@ -333,14 +333,14 @@ export default function ProductoDetallePage() {
                   );
                 })}
               </div>
-              {talle == null && <p className="text-sm text-gray-500 mt-1">Podés elegir un talle primero o seleccionar un color.</p>}
+              {talle == null && <p className="text-sm text-neutral-500 mt-1">Podés elegir un talle primero o seleccionar un color.</p>}
             </div>
           )}
 
           {/* Color selector */}
           {colorOptions.length > 0 && (
             <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">Color</label>
+              <label className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">Color</label>
               <div className="flex flex-wrap gap-2">
                 {colorOptions.map((c) => {
                   const isSelected = color === c.value;
@@ -348,10 +348,10 @@ export default function ProductoDetallePage() {
                   return (
                     <button
                       key={c.value}
-                      className={`px-3 py-1.5 rounded border text-sm transition ${
+                      className={`px-3 py-1.5 border text-sm transition ${
                         isSelected
-                          ? 'bg-gray-900 text-white border-gray-900'
-                          : 'bg-white text-gray-900 border-gray-300 hover:border-gray-900'
+                          ? 'bg-neutral-900 text-white border-neutral-900'
+                          : 'bg-white text-neutral-900 border-neutral-300 hover:border-neutral-900'
                       }`}
                       style={{ opacity: isDimmed ? 0.45 : 1 }}
                       onClick={() => handleColorChange(c.value)}
@@ -362,7 +362,7 @@ export default function ProductoDetallePage() {
                   );
                 })}
               </div>
-              {!color && <p className="text-sm text-gray-500 mt-1">Seleccioná un color para ver disponibilidad y comprar.</p>}
+              {!color && <p className="text-sm text-neutral-500 mt-1">Seleccioná un color para ver disponibilidad y comprar.</p>}
             </div>
           )}
 
@@ -371,10 +371,10 @@ export default function ProductoDetallePage() {
             <p className="text-red-500 text-sm mb-4">Sin stock para esta combinación.</p>
           ) : (
             <div className="mb-6">
-              <label className="text-sm font-medium mb-2 block">Cantidad</label>
+              <label className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">Cantidad</label>
               <div className="flex items-center gap-3">
                 <button
-                  className="w-9 h-9 border rounded flex items-center justify-center hover:bg-gray-100 disabled:opacity-40"
+                  className="w-9 h-9 border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40"
                   onClick={disminuirCantidadLocal}
                   disabled={cantidad <= 1}
                 >
@@ -382,7 +382,7 @@ export default function ProductoDetallePage() {
                 </button>
                 <span className="w-12 text-center font-medium">{cantidad}</span>
                 <button
-                  className="w-9 h-9 border rounded flex items-center justify-center hover:bg-gray-100 disabled:opacity-40"
+                  className="w-9 h-9 border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40"
                   onClick={aumentarCantidadLocal}
                   disabled={stockActual != null ? cantidad >= stockActual : false}
                 >
@@ -390,13 +390,13 @@ export default function ProductoDetallePage() {
                 </button>
               </div>
               {stockActual != null && stockActual > 0 && stockActual <= 5 && (
-                <p className="text-yellow-600 text-sm mt-1">Quedan solo {stockActual} unidades.</p>
+                <p className="text-amber-600 text-sm mt-1">Quedan solo {stockActual} unidades.</p>
               )}
             </div>
           )}
 
           <button
-            className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-neutral-900 text-white py-3.5 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleAgregar}
             disabled={disableAdd}
           >

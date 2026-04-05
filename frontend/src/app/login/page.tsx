@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useRef, type ChangeEvent, type FormEvent } from 'react';
+import React, { Suspense, useState, useEffect, useRef, type ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { scheduleAccessAutoRefresh } from '@/lib/auth';
@@ -60,7 +60,7 @@ function LoginContent() {
     tryRender();
   }, [captchaRequired]);
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setInfo('');
@@ -136,15 +136,15 @@ function LoginContent() {
     : '';
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold text-center mb-6">Iniciar sesión</h1>
-      <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-xl shadow-sm space-y-4" noValidate>
+    <div className="max-w-md mx-auto px-4 py-16 md:py-20">
+      <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Iniciar sesión</h1>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Email</label>
           <input
             type="text"
             name="email"
-            className={`w-full border rounded-lg px-3 py-2 ${emailClass}`}
+            className={`w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors ${emailClass}`}
             placeholder="Tu email"
             value={form.email}
             onChange={handleChange}
@@ -155,15 +155,15 @@ function LoginContent() {
         {captchaRequired && (
           <div>
             <div id="login-turnstile" />
-            <p className="text-sm text-gray-500 mt-1">Completá el captcha para seguir.</p>
+            <p className="text-sm text-neutral-500 mt-1">Completá el captcha para seguir.</p>
           </div>
         )}
         <div>
-          <label className="block text-sm font-medium mb-1">Contraseña</label>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Contraseña</label>
           <input
             type="password"
             name="password"
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
             placeholder="Contraseña"
             value={form.password}
             onChange={handleChange}
@@ -172,25 +172,25 @@ function LoginContent() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full bg-neutral-900 text-white py-3 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50"
           disabled={submitting}
         >
           {submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}
         </button>
         {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">{error}</div>
+          <div className="bg-red-50 text-red-700 p-3 text-sm border border-red-100">{error}</div>
         )}
         {error?.toLowerCase().includes('verificar tu email') && (
           <button
             type="button"
-            className="w-full border border-gray-300 rounded-lg py-2 hover:bg-gray-100 text-sm"
+            className="w-full border border-neutral-200 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
             onClick={handleResend}
             disabled={sending || !form.email}
           >
             {sending ? 'Enviando…' : 'Reenviar verificación'}
           </button>
         )}
-        {info && <div className="bg-blue-50 text-blue-700 p-3 rounded-lg text-sm">{info}</div>}
+        {info && <div className="bg-neutral-50 text-neutral-700 p-3 text-sm border border-neutral-100">{info}</div>}
       </form>
     </div>
   );

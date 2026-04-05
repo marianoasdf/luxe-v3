@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 /* Base reset & typography */
 body {
-  @apply bg-white text-gray-900 antialiased;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  @apply bg-white text-neutral-800 antialiased;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Smooth scrolling */
@@ -13,7 +15,26 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Offset for fixed navbar */
+/* Offset for sticky navbar */
 main {
-  padding-top: 60px;
+  min-height: calc(100vh - 64px);
+}
+
+/* Selection style */
+::selection {
+  @apply bg-neutral-900 text-white;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-neutral-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-neutral-400;
 }

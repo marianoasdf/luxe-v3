@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { formatoPrecio } from '@/lib/utils';
@@ -18,14 +19,20 @@ export default function Header() {
     openCartTick,
   } = useCart();
 
+  const pathname = usePathname();
+  const loginHref = `/login?from=${encodeURIComponent(pathname)}`;
+
   const [showMenu, setShowMenu] = useState(false);
   const [showCart, setShowCart] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (openCartTick > 0) setShowCart(true);
   }, [openCartTick]);
 
-  // Close menus on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -37,108 +44,167 @@ export default function Header() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-gray-900 text-white">
-      <div className="relative flex h-full items-center justify-between px-2">
-        {/* Left: burger + desktop nav */}
-        <div className="flex items-center gap-3 h-full">
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const navContent = (
+      <div className="relative max-w-7xl mx-auto flex h-full items-center justify-between px-4 md:px-8">
+        {/* Left: Burger (mobile) + Logo (desktop) + Nav */}
+        <div className="flex items-center gap-8">
+          {/* Mobile burger */}
           <button
-            className="md:hidden flex items-center gap-2 bg-transparent border-none"
+            className="md:hidden p-2 hover:bg-neutral-100 rounded-full transition-colors duration-300"
             aria-label="Menú"
             onClick={() => setShowMenu(true)}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
             </svg>
-            <span className="text-xs font-light uppercase tracking-wider">Menú</span>
           </button>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="/" className="text-white hover:text-gray-300 text-sm">Inicio</Link>
-            <Link href="/productos" className="text-white hover:text-gray-300 text-sm">Productos</Link>
-            <Link href="/contacto" className="text-white hover:text-gray-300 text-sm">Contacto</Link>
+          <Link href="/" className="hidden md:block font-display text-xl text-neutral-900">
+            Lüxe
+          </Link>
+
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/productos" className="text-sm uppercase tracking-wider text-neutral-600 hover:text-neutral-900 transition-colors duration-300">
+              Shop
+            </Link>
+            <Link href="/contacto" className="text-sm uppercase tracking-wider text-neutral-600 hover:text-neutral-900 transition-colors duration-300">
+              Contacto
+            </Link>
           </div>
         </div>
 
-        {/* Center: logo */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Link href="/" className="text-xl font-normal whitespace-nowrap">Luxe 👕</Link>
-        </div>
+        {/* Mobile centered logo */}
+        <Link href="/" className="md:hidden absolute left-1/2 -translate-x-1/2 font-display text-xl text-neutral-900">
+          Lüxe
+        </Link>
 
-        {/* Right: auth links + cart */}
-        <div className="flex items-center gap-2 h-full">
-          {user ? (
-            <>
-              <span className="hidden md:inline text-sm font-light">Hola, {user.nombre || user.email}</span>
-              <Link href="/mi-cuenta" className="hidden md:inline text-sm font-light hover:text-gray-300">Mi cuenta</Link>
-              <span className="hidden md:inline text-gray-400">|</span>
+        {/* Right: Auth + Cart */}
+        <div className="flex items-center gap-4">
+          {mounted && (user ? (
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/mi-cuenta" className="text-xs uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors duration-300">
+                Mi cuenta
+              </Link>
               <button
                 onClick={logout}
-                className="hidden md:inline text-sm font-light hover:text-gray-300 bg-transparent border-none cursor-pointer text-white"
+                className="text-xs uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors duration-300 bg-transparent border-none cursor-pointer"
               >
-                Cerrar sesión
+                Salir
               </button>
-            </>
+            </div>
           ) : (
-            <>
-              <Link href="/register" className="hidden md:inline text-sm font-light hover:text-gray-300">Crear cuenta</Link>
-              <span className="hidden md:inline text-gray-400">|</span>
-              <Link href="/login" className="hidden md:inline text-sm font-light hover:text-gray-300">Iniciar sesión</Link>
-            </>
-          )}
+            <div className="hidden md:flex items-center gap-4">
+              <Link href={loginHref} className="text-xs uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors duration-300">
+                Ingresar
+              </Link>
+              <Link href="/register" className="text-xs uppercase tracking-wider text-neutral-500 hover:text-neutral-900 transition-colors duration-300">
+                Crear cuenta
+              </Link>
+            </div>
+          ))}
 
+          {/* Cart button */}
           <button
-            className="bg-transparent border-none cursor-pointer p-1"
+            className="relative p-2 hover:bg-neutral-100 rounded-full transition-colors duration-300"
             onClick={() => setShowCart(true)}
             aria-label="Carrito"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h7.72a2 2 0 0 0 2-1.61l1.38-7.39H6" />
+            <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
-            {carrito.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+            {mounted && carrito.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
                 {carrito.length}
               </span>
             )}
           </button>
         </div>
       </div>
+  );
 
+  const offcanvasContent = <>
       {/* Mobile menu offcanvas */}
       {showMenu && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setShowMenu(false)} />
-          <div className="fixed top-0 left-0 h-full w-72 bg-white z-[70] shadow-xl flex flex-col">
-            <div className="flex justify-end p-4">
-              <button onClick={() => setShowMenu(false)} className="text-gray-600 text-xl">&times;</button>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowMenu(false)} />
+          <div className="fixed top-0 left-0 h-full w-80 bg-white z-[70] shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-100">
+              <span className="font-display text-lg text-neutral-900">Lüxe</span>
+              <button
+                onClick={() => setShowMenu(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            <div className="flex flex-col gap-4 px-6">
-              <Link href="/" className="text-gray-800 uppercase text-sm tracking-wider font-light" onClick={() => setShowMenu(false)}>Inicio</Link>
-              <Link href="/productos" className="text-gray-800 uppercase text-sm tracking-wider font-light" onClick={() => setShowMenu(false)}>Productos</Link>
-              <Link href="/contacto" className="text-gray-800 uppercase text-sm tracking-wider font-light" onClick={() => setShowMenu(false)}>Contacto</Link>
+            <div className="flex flex-col gap-1 p-6">
+              <Link
+                href="/"
+                className="py-3 text-neutral-900 uppercase text-sm tracking-widest font-light hover:text-neutral-500 transition-colors"
+                onClick={() => setShowMenu(false)}
+              >
+                Inicio
+              </Link>
+              <Link
+                href="/productos"
+                className="py-3 text-neutral-900 uppercase text-sm tracking-widest font-light hover:text-neutral-500 transition-colors"
+                onClick={() => setShowMenu(false)}
+              >
+                Shop
+              </Link>
+              <Link
+                href="/contacto"
+                className="py-3 text-neutral-900 uppercase text-sm tracking-widest font-light hover:text-neutral-500 transition-colors"
+                onClick={() => setShowMenu(false)}
+              >
+                Contacto
+              </Link>
             </div>
-            <div className="mt-auto p-6 border-t flex flex-wrap items-center gap-2 text-sm md:hidden">
+            <div className="mt-auto p-6 border-t border-neutral-100">
               {user ? (
-                <>
-                  <span className="text-gray-800">Hola, {user.nombre || user.email}</span>
-                  <span className="text-gray-400">|</span>
-                  <Link href="/mi-cuenta" className="text-gray-800" onClick={() => setShowMenu(false)}>Mi cuenta</Link>
-                  <span className="text-gray-400">|</span>
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs text-neutral-500 uppercase tracking-wider">
+                    {user.nombre || user.email}
+                  </span>
+                  <Link
+                    href="/mi-cuenta"
+                    className="text-sm text-neutral-700 hover:text-neutral-900 transition-colors"
+                    onClick={() => setShowMenu(false)}
+                  >
+                    Mi cuenta
+                  </Link>
                   <button
                     onClick={() => { logout(); setShowMenu(false); }}
-                    className="text-gray-800 bg-transparent border-none cursor-pointer p-0"
+                    className="text-sm text-neutral-700 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer p-0 text-left"
                   >
                     Cerrar sesión
                   </button>
-                </>
+                </div>
               ) : (
-                <>
-                  <Link href="/register" className="text-gray-800" onClick={() => setShowMenu(false)}>Crear cuenta</Link>
-                  <span className="text-gray-400">|</span>
-                  <Link href="/login" className="text-gray-800" onClick={() => setShowMenu(false)}>Iniciar sesión</Link>
-                </>
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href={loginHref}
+                    className="text-sm text-neutral-700 hover:text-neutral-900 transition-colors"
+                    onClick={() => setShowMenu(false)}
+                  >
+                    Ingresar
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="text-sm text-neutral-700 hover:text-neutral-900 transition-colors"
+                    onClick={() => setShowMenu(false)}
+                  >
+                    Crear cuenta
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -148,81 +214,114 @@ export default function Header() {
       {/* Cart offcanvas */}
       {showCart && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setShowCart(false)} />
-          <div className="fixed top-0 right-0 h-full w-80 bg-white z-[70] shadow-xl flex flex-col text-gray-900">
-            <div className="flex justify-end p-4">
-              <button onClick={() => setShowCart(false)} className="text-gray-600 text-xl">&times;</button>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowCart(false)} />
+          <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-neutral-100">
+              <h3 className="text-sm font-semibold uppercase tracking-widest text-neutral-900">
+                Carrito ({carrito.length})
+              </h3>
+              <button
+                onClick={() => setShowCart(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            <div className="flex-1 overflow-y-auto px-4">
-              <h3 className="text-lg font-semibold mb-4">Carrito de compras 🛒</h3>
+
+            <div className="flex-1 overflow-y-auto p-6">
               {carrito.length === 0 ? (
-                <p className="text-center text-gray-500">Tu carrito está vacío 😢</p>
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <svg className="w-16 h-16 text-neutral-200 mb-4" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                  <p className="text-neutral-400 text-sm">Tu carrito está vacío</p>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="mt-4 text-xs uppercase tracking-widest text-neutral-900 border-b border-neutral-900 pb-0.5 hover:text-neutral-600 hover:border-neutral-600 transition-colors"
+                  >
+                    Seguir comprando
+                  </button>
+                </div>
               ) : (
-                <ul className="space-y-3">
+                <ul className="space-y-6">
                   {carrito.map((item) => (
-                    <li key={item.uniqueKey} className="border-b pb-3">
-                      <div>
-                        <strong>{item.name}</strong>
-                        <div className="text-sm text-gray-500">Talle: {item.talle} | Color: {item.color}</div>
-                        <div className="text-sm">{formatoPrecio(item.price)} x {item.cantidad}</div>
-                      </div>
-                      <div className="flex gap-2 mt-2">
-                        <button
-                          className="px-2 py-1 border rounded text-sm hover:bg-gray-100"
-                          onClick={() => disminuirCantidad(item.uniqueKey)}
-                        >
-                          -
-                        </button>
-                        <button
-                          className="px-2 py-1 border rounded text-sm hover:bg-gray-100"
-                          onClick={() => aumentarCantidad(item.uniqueKey)}
-                        >
-                          +
-                        </button>
-                        <button
-                          className="px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                          onClick={() => eliminarDelCarrito(item.uniqueKey)}
-                        >
-                          Eliminar
-                        </button>
+                    <li key={item.uniqueKey} className="flex gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-neutral-900 truncate">{item.name}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">
+                          {item.talle && `Talle: ${item.talle}`}
+                          {item.talle && item.color && ' · '}
+                          {item.color && `Color: ${item.color}`}
+                        </p>
+                        <p className="text-sm font-medium text-neutral-900 mt-1">{formatoPrecio(item.price)}</p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <button
+                            className="w-7 h-7 flex items-center justify-center border border-neutral-200 rounded text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                            onClick={() => disminuirCantidad(item.uniqueKey)}
+                          >
+                            −
+                          </button>
+                          <span className="text-sm font-medium w-4 text-center">{item.cantidad}</span>
+                          <button
+                            className="w-7 h-7 flex items-center justify-center border border-neutral-200 rounded text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                            onClick={() => aumentarCantidad(item.uniqueKey)}
+                          >
+                            +
+                          </button>
+                          <button
+                            className="ml-auto text-xs text-neutral-400 hover:text-neutral-900 transition-colors underline"
+                            onClick={() => eliminarDelCarrito(item.uniqueKey)}
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       </div>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
+
             {carrito.length > 0 && (
-              <div className="p-4 border-t space-y-3">
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total:</span>
-                  <span>{formatoPrecio(total)}</span>
+              <div className="p-6 border-t border-neutral-100 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm uppercase tracking-wider text-neutral-500">Total</span>
+                  <span className="text-lg font-semibold text-neutral-900">{formatoPrecio(total)}</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Link
-                    href="/checkout"
-                    className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700"
-                    onClick={() => setShowCart(false)}
-                  >
-                    Confirmar compra
-                  </Link>
-                  <button
-                    className="bg-yellow-500 text-white px-4 py-2 rounded text-sm hover:bg-yellow-600"
-                    onClick={vaciarCarrito}
-                  >
-                    Vaciar
-                  </button>
-                  <button
-                    className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600"
-                    onClick={() => setShowCart(false)}
-                  >
-                    Cerrar
-                  </button>
-                </div>
+                <Link
+                  href="/checkout"
+                  className="block w-full bg-neutral-900 text-white text-center py-3.5 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors duration-300 rounded-none"
+                  onClick={() => setShowCart(false)}
+                >
+                  Finalizar compra
+                </Link>
+                <button
+                  className="w-full text-xs text-center uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer py-2"
+                  onClick={vaciarCarrito}
+                >
+                  Vaciar carrito
+                </button>
               </div>
             )}
           </div>
         </>
       )}
-    </nav>
+    </>;
+
+  return (
+    <>
+      <nav
+        className={`sticky top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${
+          scrolled
+            ? 'bg-white/90 backdrop-blur-md shadow-sm'
+            : 'bg-white'
+        }`}
+      >
+        {navContent}
+      </nav>
+      {offcanvasContent}
+    </>
   );
 }

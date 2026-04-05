@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, useRef, type ChangeEvent, type FormEvent, type DragEvent } from 'react';
+import React, { useEffect, useMemo, useState, useRef, type ChangeEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cdnImage } from '@/lib/utils';
@@ -206,8 +206,8 @@ export default function AdminProductsPage() {
   };
 
   const onDragStart = (idx: number) => () => { draggingIndexRef.current = idx; };
-  const onDragOver = (e: DragEvent) => { e.preventDefault(); };
-  const onDrop = (idx: number) => (e: DragEvent) => {
+  const onDragOver = (e: React.DragEvent) => { e.preventDefault(); };
+  const onDrop = (idx: number) => (e: React.DragEvent) => {
     e.preventDefault();
     const from = draggingIndexRef.current;
     if (from === null || from === idx) return;
@@ -230,7 +230,7 @@ export default function AdminProductsPage() {
     });
   };
 
-  const submit = async (e: FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (!secret) { setError('Ingresá el Admin Secret'); return; }
@@ -278,7 +278,7 @@ export default function AdminProductsPage() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Admin de Productos</h1>
-        <Link href="/admin/envios" className="border rounded-lg px-4 py-2 text-sm hover:bg-gray-100">Ir a Admin Envíos</Link>
+        <Link href="/admin/envios" className="border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100">Ir a Admin Envíos</Link>
       </div>
 
       <div className="mb-4">
@@ -291,7 +291,7 @@ export default function AdminProductsPage() {
       <div className="grid md:grid-cols-2 gap-8">
         {/* Form */}
         <div className="border rounded-xl overflow-hidden">
-          <div className="bg-gray-50 px-4 py-3 font-semibold">{editingId ? 'Editar producto' : 'Crear producto'}</div>
+          <div className="bg-neutral-50 px-4 py-3 font-semibold">{editingId ? 'Editar producto' : 'Crear producto'}</div>
           <div className="p-4">
             <form onSubmit={submit} className="space-y-3">
               <div>
@@ -310,10 +310,10 @@ export default function AdminProductsPage() {
                 <label className="block text-sm mb-1">Subir archivos</label>
                 <input type="file" multiple className="w-full border rounded-lg px-3 py-2" onChange={onSelectFiles} disabled={uploading} />
                 <div className="flex gap-2 mt-2">
-                  <button type="button" className="border rounded-lg px-3 py-1 text-sm hover:bg-gray-100" onClick={uploadSelected} disabled={uploading || !pendingFiles.length}>
+                  <button type="button" className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={uploadSelected} disabled={uploading || !pendingFiles.length}>
                     {uploading ? 'Subiendo…' : 'Subir'}
                   </button>
-                  {pendingFiles.length > 0 && !uploading && <span className="text-sm text-gray-500">{pendingFiles.length} listo(s)</span>}
+                  {pendingFiles.length > 0 && !uploading && <span className="text-sm text-neutral-500">{pendingFiles.length} listo(s)</span>}
                 </div>
                 {uploadWarnings.length > 0 && (
                   <div className="text-yellow-600 text-sm mt-1">{uploadWarnings.map((w, i) => <div key={i}>⚠ {w}</div>)}</div>
@@ -354,8 +354,8 @@ export default function AdminProductsPage() {
                 </select>
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">{editingId ? 'Guardar' : 'Crear'}</button>
-                {editingId && <button type="button" className="border px-6 py-2 rounded-lg hover:bg-gray-100" onClick={startCreate}>Cancelar</button>}
+                <button type="submit" className="bg-neutral-900 text-white px-6 py-2 rounded-lg hover:bg-neutral-800">{editingId ? 'Guardar' : 'Crear'}</button>
+                {editingId && <button type="button" className="border px-6 py-2 rounded-lg hover:bg-neutral-100" onClick={startCreate}>Cancelar</button>}
               </div>
             </form>
             {editingId && <VariantsManager productId={editingId} secret={secret} headers={headers} productPrice={form.price} />}
@@ -366,7 +366,7 @@ export default function AdminProductsPage() {
         <div>
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-semibold">Productos</h2>
-            <button className="border rounded-lg px-3 py-1 text-sm hover:bg-gray-100" onClick={fetchList} disabled={loading}>
+            <button className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={fetchList} disabled={loading}>
               {loading ? 'Actualizando…' : 'Actualizar'}
             </button>
           </div>
@@ -375,15 +375,15 @@ export default function AdminProductsPage() {
               <div key={p.id} className="flex justify-between items-center border rounded-lg p-3">
                 <div>
                   <div className="font-medium">{p.name}</div>
-                  <div className="text-sm text-gray-500">{p.slug} · {p.currency} {p.price}</div>
+                  <div className="text-sm text-neutral-500">{p.slug} · {p.currency} {p.price}</div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="text-blue-600 text-sm hover:underline" onClick={() => startEdit(p)}>Editar</button>
+                  <button className="text-neutral-900 text-sm hover:underline" onClick={() => startEdit(p)}>Editar</button>
                   <button className="text-red-600 text-sm hover:underline" onClick={() => remove(p)}>Eliminar</button>
                 </div>
               </div>
             ))}
-            {list.length === 0 && <p className="text-gray-500">Sin productos…</p>}
+            {list.length === 0 && <p className="text-neutral-500">Sin productos…</p>}
           </div>
         </div>
       </div>

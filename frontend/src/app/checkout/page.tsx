@@ -363,15 +363,15 @@ export default function CheckoutPage() {
   }, [modo, brickMounted, paymentReady, total]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold text-center mb-8">Finalizá tu compra</h1>
+    <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
+      <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Finalizá tu compra</h1>
 
       {modo === null && (
         <div className="flex justify-center gap-4 mb-8">
-          <button className="border border-blue-600 text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50" onClick={() => setModo('invitado')}>
+          <button className="border border-neutral-900 text-neutral-900 px-6 py-2.5 text-sm uppercase tracking-wider hover:bg-neutral-50 transition-colors" onClick={() => setModo('invitado')}>
             Comprar como invitado
           </button>
-          <button className="border border-gray-400 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50" onClick={() => router.push('/login?from=/checkout')}>
+          <button className="border border-neutral-300 text-neutral-700 px-6 py-2.5 text-sm uppercase tracking-wider hover:bg-neutral-50 transition-colors" onClick={() => router.push('/login?from=/checkout')}>
             Iniciar sesión
           </button>
         </div>
@@ -379,44 +379,44 @@ export default function CheckoutPage() {
 
       <div className="grid md:grid-cols-2 gap-8">
         {(modo === 'invitado' || modo === 'logueado') && (
-          <div className="bg-gray-50 p-6 rounded-xl shadow-sm space-y-6">
+          <div className="bg-neutral-50 p-6 border border-neutral-100 space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Datos del comprador</h3>
+              <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Datos del comprador</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm mb-1">Nombre y apellido</label>
-                  <input type="text" name="nombre" className="w-full border rounded-lg px-3 py-2" value={form.nombre} onChange={handleChange} />
+                  <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Nombre y apellido</label>
+                  <input type="text" name="nombre" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={form.nombre} onChange={handleChange} />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Email</label>
-                  <input type="email" name="email" className="w-full border rounded-lg px-3 py-2" value={form.email} onChange={handleChange} />
+                  <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Email</label>
+                  <input type="email" name="email" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={form.email} onChange={handleChange} />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Dirección (calle y número)</label>
-                  <input type="text" name="direccion" className="w-full border rounded-lg px-3 py-2" value={form.direccion} onChange={handleChange} />
+                  <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Dirección (calle y número)</label>
+                  <input type="text" name="direccion" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={form.direccion} onChange={handleChange} />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Teléfono</label>
-                  <input type="text" name="telefono" className="w-full border rounded-lg px-3 py-2" value={form.telefono} onChange={handleChange} />
+                  <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Teléfono</label>
+                  <input type="text" name="telefono" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={form.telefono} onChange={handleChange} />
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">Método de envío</h3>
+              <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Método de envío</h3>
               <div className="space-y-2">
-                <label className="flex items-start gap-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-100">
+                <label className="flex items-start gap-3 border border-neutral-200 p-4 cursor-pointer hover:bg-white transition-colors">
                   <input type="radio" name="method" value="correo_argentino" checked={shipping.method === 'correo_argentino'} onChange={handleShippingChange} className="mt-1" />
                   <div>
-                    <div className="font-medium">Correo Argentino - envío a domicilio</div>
-                    <div className="text-sm text-gray-500">Cotización por código postal</div>
+                    <div className="font-medium text-sm">Correo Argentino - envío a domicilio</div>
+                    <div className="text-sm text-neutral-500">Cotización por código postal</div>
                   </div>
                 </label>
-                <label className="flex items-start gap-3 border rounded-lg p-4 cursor-pointer hover:bg-gray-100">
+                <label className="flex items-start gap-3 border border-neutral-200 p-4 cursor-pointer hover:bg-white transition-colors">
                   <input type="radio" name="method" value="retiro_local" checked={shipping.method === 'retiro_local'} onChange={handleShippingChange} className="mt-1" />
                   <div>
-                    <div className="font-medium">Retiro en tienda</div>
-                    <div className="text-sm text-gray-500">Sin costo de envío</div>
+                    <div className="font-medium text-sm">Retiro en tienda</div>
+                    <div className="text-sm text-neutral-500">Sin costo de envío</div>
                   </div>
                 </label>
               </div>
@@ -425,32 +425,32 @@ export default function CheckoutPage() {
                 <div className="mt-4 space-y-3">
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-sm mb-1">Código postal</label>
-                      <input type="text" name="postalCode" className="w-full border rounded-lg px-3 py-2" value={shipping.postalCode} onChange={handleShippingChange} />
+                      <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Código postal</label>
+                      <input type="text" name="postalCode" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.postalCode} onChange={handleShippingChange} />
                     </div>
                     <div>
-                      <label className="block text-sm mb-1">Provincia</label>
-                      <input type="text" name="province" className="w-full border rounded-lg px-3 py-2" value={shipping.province} onChange={handleShippingChange} />
+                      <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Provincia</label>
+                      <input type="text" name="province" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.province} onChange={handleShippingChange} />
                     </div>
                     <div>
-                      <label className="block text-sm mb-1">Ciudad</label>
-                      <input type="text" name="city" className="w-full border rounded-lg px-3 py-2" value={shipping.city} onChange={handleShippingChange} />
+                      <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Ciudad</label>
+                      <input type="text" name="city" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.city} onChange={handleShippingChange} />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm mb-1">Referencia (opcional)</label>
-                    <input type="text" name="reference" className="w-full border rounded-lg px-3 py-2" value={shipping.reference} onChange={handleShippingChange} placeholder="Ej: Timbre 2" />
+                    <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Referencia (opcional)</label>
+                    <input type="text" name="reference" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.reference} onChange={handleShippingChange} placeholder="Ej: Timbre 2" />
                   </div>
                   <button
                     type="button"
-                    className="w-full border border-blue-600 text-blue-600 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50"
+                    className="w-full border border-neutral-900 text-neutral-900 py-2.5 text-sm uppercase tracking-wider hover:bg-neutral-900 hover:text-white transition-colors disabled:opacity-50"
                     disabled={shippingLoading}
                     onClick={quoteShipping}
                   >
                     {shippingLoading ? 'Cotizando envío...' : 'Calcular envío y habilitar pago'}
                   </button>
                   {shipping.quoted && (
-                    <div className="bg-blue-50 text-blue-800 p-3 rounded-lg text-sm">
+                    <div className="bg-neutral-100 text-neutral-800 p-3 text-sm border border-neutral-200">
                       Envío: {formatoPrecio(shipping.cost)} | Zona: {shipping.zone || 'General'} | Entrega estimada: {shipping.etaDays || '-'} días
                       <br />
                       <strong>Total actualizado: {formatoPrecio(total)}</strong>
@@ -462,25 +462,25 @@ export default function CheckoutPage() {
             </div>
 
             {/* Totals summary */}
-            <div className="bg-white border rounded-lg p-4">
-              <div className="flex justify-between text-sm text-gray-500">
+            <div className="bg-white border border-neutral-200 p-4">
+              <div className="flex justify-between text-sm text-neutral-500">
                 <span>Subtotal</span>
                 <span>{formatoPrecio(itemsSubtotal)}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-500 mt-1">
+              <div className="flex justify-between text-sm text-neutral-500 mt-1">
                 <span>Envío</span>
                 <span>{formatoPrecio(shippingCost)}</span>
               </div>
-              <div className="flex justify-between font-semibold mt-2 pt-2 border-t">
+              <div className="flex justify-between font-semibold mt-2 pt-2 border-t border-neutral-100">
                 <span>Total a pagar</span>
                 <span>{formatoPrecio(total)}</span>
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">Método de pago</h3>
+              <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Método de pago</h3>
               {!paymentReady && (
-                <div className="border rounded-lg p-4 bg-white text-gray-500 text-sm">
+                <div className="border border-neutral-200 p-4 bg-white text-neutral-500 text-sm">
                   {!buyerReady
                     ? 'Completá nombre, email y teléfono para habilitar el pago.'
                     : 'Completá tus datos y calculá el envío para habilitar el pago.'}
@@ -493,27 +493,27 @@ export default function CheckoutPage() {
         )}
 
         {/* Order summary */}
-        <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Resumen de compra</h3>
+        <div className="bg-neutral-50 p-6 border border-neutral-100">
+          <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Resumen de compra</h3>
           <div className="space-y-3 mb-4">
             {carrito.map((item) => (
               <div key={`${item.id}-${item.talle || ''}-${item.color || ''}`} className="flex items-center gap-3">
-                <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0">
+                <div className="relative w-14 h-14 overflow-hidden flex-shrink-0">
                   <Image src={item.img} alt={item.name} fill className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{item.name}</div>
-                  <div className="text-sm text-gray-500">Talle: {item.talle} | Color: {item.color}</div>
-                  <div className="text-sm">x{item.cantidad}</div>
+                  <div className="font-medium text-sm truncate">{item.name}</div>
+                  <div className="text-sm text-neutral-500">Talle: {item.talle} | Color: {item.color}</div>
+                  <div className="text-sm text-neutral-400">x{item.cantidad}</div>
                 </div>
-                <div className="font-semibold text-green-600">{formatoPrecio(item.price * item.cantidad)}</div>
+                <div className="font-semibold text-sm">{formatoPrecio(item.price * item.cantidad)}</div>
               </div>
             ))}
           </div>
-          <div className="text-right space-y-1 border-t pt-3">
-            <div className="text-sm text-gray-500">Subtotal: {formatoPrecio(itemsSubtotal)}</div>
-            <div className="text-sm text-gray-500">Envío: {formatoPrecio(shippingCost)}</div>
-            <div className="font-bold text-lg">Total: {formatoPrecio(total)}</div>
+          <div className="text-right space-y-1 border-t border-neutral-200 pt-3">
+            <div className="text-sm text-neutral-500">Subtotal: {formatoPrecio(itemsSubtotal)}</div>
+            <div className="text-sm text-neutral-500">Envío: {formatoPrecio(shippingCost)}</div>
+            <div className="font-semibold text-lg">Total: {formatoPrecio(total)}</div>
           </div>
         </div>
       </div>

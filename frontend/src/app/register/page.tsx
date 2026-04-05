@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from 'react';
+import React, { useState, useEffect, useRef, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 declare global {
@@ -28,7 +28,7 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setInfo('');
@@ -123,15 +123,15 @@ export default function RegisterPage() {
     : '';
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold text-center mb-6">Crear cuenta</h1>
-      <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-xl shadow-sm space-y-4" noValidate>
+    <div className="max-w-md mx-auto px-4 py-16 md:py-20">
+      <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Crear cuenta</h1>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label className="block text-sm font-medium mb-1">Nombre</label>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Nombre</label>
           <input
             type="text"
             name="nombre"
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
             placeholder="Tu nombre"
             value={form.nombre}
             onChange={handleChange}
@@ -139,11 +139,11 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Email</label>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Email</label>
           <input
             type="text"
             name="email"
-            className={`w-full border rounded-lg px-3 py-2 ${emailClass}`}
+            className={`w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors ${emailClass}`}
             placeholder="Tu email"
             value={form.email}
             onChange={handleChange}
@@ -152,11 +152,11 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Contraseña</label>
+          <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Contraseña</label>
           <input
             type="password"
             name="password"
-            className="w-full border rounded-lg px-3 py-2"
+            className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
             placeholder="Contraseña"
             value={form.password}
             onChange={handleChange}
@@ -166,29 +166,29 @@ export default function RegisterPage() {
         {captchaRequired && (
           <div>
             <div id="register-turnstile" />
-            <p className="text-sm text-gray-500 mt-1">Completá el captcha para seguir.</p>
+            <p className="text-sm text-neutral-500 mt-1">Completá el captcha para seguir.</p>
           </div>
         )}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full bg-neutral-900 text-white py-3 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50"
           disabled={submitting}
         >
           {submitting ? 'Registrando…' : 'Registrarme'}
         </button>
-        {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">{error}</div>}
+        {error && <div className="bg-red-50 text-red-700 p-3 text-sm border border-red-100">{error}</div>}
         {exito && (
-          <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm">
+          <div className="bg-green-50 text-green-700 p-3 text-sm border border-green-100">
             ¡Registro exitoso! Revisa tu email para activar la cuenta.
             <button
               type="button"
-              className="block w-full mt-2 border border-gray-300 rounded-lg py-2 hover:bg-gray-100 text-sm"
+              className="block w-full mt-2 border border-neutral-200 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
               onClick={handleResend}
               disabled={reenviando || !form.email}
             >
               {reenviando ? 'Enviando…' : 'Reenviar verificación'}
             </button>
-            {info && <div className="mt-2 bg-blue-50 text-blue-700 p-2 rounded text-sm">{info}</div>}
+            {info && <div className="mt-2 bg-neutral-50 text-neutral-700 p-2 text-sm border border-neutral-100">{info}</div>}
           </div>
         )}
       </form>

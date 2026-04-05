@@ -75,16 +75,16 @@ export default function ProductosPage() {
   });
 
   const filtrosJSX = (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <input
         type="text"
-        className="w-full border rounded-lg px-3 py-2"
-        placeholder="Buscar por nombre..."
+        className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
+        placeholder="Buscar..."
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
       />
       <select
-        className="w-full border rounded-lg px-3 py-2"
+        className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors bg-white"
         value={tipo}
         onChange={(e) => { setTipo(e.target.value); setTalle(''); }}
       >
@@ -93,7 +93,7 @@ export default function ProductosPage() {
       </select>
       {tipo && tallesTipo.length > 0 && (
         <select
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors bg-white"
           value={talle}
           onChange={(e) => setTalle(e.target.value)}
         >
@@ -103,7 +103,7 @@ export default function ProductosPage() {
       )}
       {colores.length > 0 && (
         <select
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors bg-white"
           value={color}
           onChange={(e) => setColor(e.target.value)}
         >
@@ -111,10 +111,10 @@ export default function ProductosPage() {
           {colores.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       )}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <input
           type="number"
-          className="border rounded-lg px-3 py-2"
+          className="border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
           placeholder="Min $"
           value={precioMin}
           onChange={(e) => setPrecioMin(e.target.value)}
@@ -122,7 +122,7 @@ export default function ProductosPage() {
         />
         <input
           type="number"
-          className="border rounded-lg px-3 py-2"
+          className="border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors"
           placeholder="Max $"
           value={precioMax}
           onChange={(e) => setPrecioMax(e.target.value)}
@@ -133,19 +133,37 @@ export default function ProductosPage() {
   );
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-8"><p className="text-gray-500">Cargando productos...</p></div>;
+    return (
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[3/4] bg-neutral-100 rounded-2xl" />
+              <div className="mt-4 h-4 bg-neutral-100 rounded w-3/4" />
+              <div className="mt-2 h-3 bg-neutral-100 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Productos</h1>
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
+      <div className="mb-10">
+        <h1 className="text-3xl md:text-4xl font-light tracking-tight text-neutral-900">Shop</h1>
+        <p className="mt-2 text-neutral-500 text-sm">{productosFiltrados.length} productos</p>
+      </div>
 
       {/* Mobile filter button */}
-      <div className="md:hidden flex justify-end mb-4">
+      <div className="md:hidden flex justify-end mb-6">
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+          className="flex items-center gap-2 border border-neutral-200 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-900 transition-colors"
           onClick={() => setShowFilters(true)}
         >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
+          </svg>
           Filtrar
         </button>
       </div>
@@ -153,29 +171,41 @@ export default function ProductosPage() {
       {/* Mobile filters offcanvas */}
       {showFilters && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-[60]" onClick={() => setShowFilters(false)} />
-          <div className="fixed top-0 right-0 h-full w-72 bg-white z-[70] shadow-xl p-6 overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold">Filtros</h3>
-              <button onClick={() => setShowFilters(false)} className="text-xl">&times;</button>
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowFilters(false)} />
+          <div className="fixed top-0 right-0 h-full w-80 bg-white z-[70] shadow-2xl flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b border-neutral-100">
+              <h3 className="text-sm font-semibold uppercase tracking-widest">Filtros</h3>
+              <button
+                onClick={() => setShowFilters(false)}
+                className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
-            {filtrosJSX}
+            <div className="p-6 overflow-y-auto flex-1">{filtrosJSX}</div>
           </div>
         </>
       )}
 
-      <div className="flex gap-8">
+      <div className="flex gap-12">
         {/* Desktop sidebar */}
-        <div className="hidden md:block w-64 flex-shrink-0">
-          <div className="sticky top-[80px]">{filtrosJSX}</div>
+        <div className="hidden md:block w-56 flex-shrink-0">
+          <div className="sticky top-[80px]">
+            <p className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Filtros</p>
+            {filtrosJSX}
+          </div>
         </div>
 
         {/* Products grid */}
         <div className="flex-1">
           {productosFiltrados.length === 0 ? (
-            <p className="text-center text-gray-500">No se encontraron productos.</p>
+            <div className="text-center py-20">
+              <p className="text-neutral-400 text-sm">No se encontraron productos</p>
+            </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {productosFiltrados.map((producto) => (
                 <ProductCard key={producto.id} producto={producto} />
               ))}

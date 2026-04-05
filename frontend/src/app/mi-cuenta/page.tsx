@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -118,7 +118,7 @@ export default function MiCuentaPage() {
     setAddrForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const saveAddr = async (e: FormEvent) => {
+  const saveAddr = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!addrForm.street_address.trim() || !addrForm.city.trim() || !addrForm.province.trim() || !addrForm.postal_code.trim()) {
       setError('Completá dirección, ciudad, provincia y código postal');
@@ -167,67 +167,67 @@ export default function MiCuentaPage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">Mi cuenta</h1>
-        <Link href="/productos" className="border border-gray-900 text-gray-900 px-4 py-2 rounded-lg text-sm hover:bg-gray-100">
+        <h1 className="font-display text-2xl md:text-3xl text-neutral-900">Mi cuenta</h1>
+        <Link href="/productos" className="border border-neutral-900 text-neutral-900 px-4 py-2  text-sm hover:bg-neutral-100">
           Seguir comprando
         </Link>
       </div>
 
-      {loading && <p className="text-gray-500">Cargando...</p>}
-      {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
+      {loading && <p className="text-neutral-500">Cargando...</p>}
+      {error && <div className="bg-red-50 text-red-700 p-3  mb-4">{error}</div>}
 
       {!loading && !error && (
         <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-start">
           {/* Left column */}
           <div className="space-y-6">
             {/* User data */}
-            <div className="border rounded-xl overflow-hidden">
-              <div className="bg-gray-50 px-4 py-3 font-semibold">Mis datos</div>
+            <div className="border border-neutral-200 overflow-hidden">
+              <div className="bg-neutral-50 px-4 py-3 font-semibold">Mis datos</div>
               <div className="divide-y">
-                <div className="px-4 py-3"><span className="block text-xs text-gray-500">Nombre</span>{panel.user?.nombre || '-'}</div>
-                <div className="px-4 py-3"><span className="block text-xs text-gray-500">Email</span>{panel.user?.email || '-'}</div>
+                <div className="px-4 py-3"><span className="block text-xs text-neutral-500">Nombre</span>{panel.user?.nombre || '-'}</div>
+                <div className="px-4 py-3"><span className="block text-xs text-neutral-500">Email</span>{panel.user?.email || '-'}</div>
                 <div className="px-4 py-3">
-                  <span className="block text-xs text-gray-500">Verificación</span>
-                  {panel.user?.email_verified ? <span className="text-green-600">✔ Verificado</span> : <span className="text-yellow-600">⏳ Pendiente</span>}
+                  <span className="block text-xs text-neutral-500">Verificación</span>
+                  {panel.user?.email_verified ? <span className="text-green-600">✔ Verificado</span> : <span className="text-amber-600">⏳ Pendiente</span>}
                 </div>
-                <div className="px-4 py-3"><span className="block text-xs text-gray-500">Cliente desde</span>{formatDate(panel.user?.created_at)}</div>
+                <div className="px-4 py-3"><span className="block text-xs text-neutral-500">Cliente desde</span>{formatDate(panel.user?.created_at)}</div>
               </div>
             </div>
 
             {/* Primary address */}
-            <div className="border rounded-xl overflow-hidden">
-              <div className="bg-gray-50 px-4 py-3 flex justify-between items-center">
+            <div className="border border-neutral-200 overflow-hidden">
+              <div className="bg-neutral-50 px-4 py-3 flex justify-between items-center">
                 <span className="font-semibold">Dirección principal</span>
                 <div className="flex gap-2">
                   {primaryAddress && !addrMode && (
-                    <button className="text-sm border rounded px-3 py-1 hover:bg-gray-100" onClick={startEdit}>Editar</button>
+                    <button className="text-sm border rounded px-3 py-1 hover:bg-neutral-100" onClick={startEdit}>Editar</button>
                   )}
                   {!addrMode && (
-                    <button className="text-sm border border-gray-900 rounded px-3 py-1 hover:bg-gray-100" onClick={startCreate}>Agregar nueva</button>
+                    <button className="text-sm border border-neutral-900 rounded px-3 py-1 hover:bg-neutral-100" onClick={startCreate}>Agregar nueva</button>
                   )}
                 </div>
               </div>
               <div className="p-4">
                 {!addrMode && primaryAddress && (
-                  <div className="bg-gray-50 border rounded-lg p-4">
+                  <div className="bg-neutral-50 border  p-4">
                     <div className="font-medium">{primaryAddress.recipient_name || panel.user?.nombre || 'Sin nombre'}</div>
-                    <div className="text-sm text-gray-600">{composeAddress(primaryAddress)}</div>
-                    {primaryAddress.phone && <div className="text-sm text-gray-500 mt-1">Tel: {primaryAddress.phone}</div>}
-                    {(primaryAddress.reference || primaryAddress.notes) && <div className="text-sm text-gray-500 mt-1">{primaryAddress.reference || primaryAddress.notes}</div>}
+                    <div className="text-sm text-neutral-600">{composeAddress(primaryAddress)}</div>
+                    {primaryAddress.phone && <div className="text-sm text-neutral-500 mt-1">Tel: {primaryAddress.phone}</div>}
+                    {(primaryAddress.reference || primaryAddress.notes) && <div className="text-sm text-neutral-500 mt-1">{primaryAddress.reference || primaryAddress.notes}</div>}
                   </div>
                 )}
-                {!addrMode && !primaryAddress && <p className="text-gray-500">Todavía no tenés una dirección cargada.</p>}
+                {!addrMode && !primaryAddress && <p className="text-neutral-500">Todavía no tenés una dirección cargada.</p>}
 
                 {!addrMode && secondaryAddresses.length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <p className="text-sm text-gray-500">Direcciones secundarias</p>
+                    <p className="text-sm text-neutral-500">Direcciones secundarias</p>
                     {secondaryAddresses.map((addr) => (
-                      <div key={addr.id} className="border rounded-lg p-3">
+                      <div key={addr.id} className="border  p-3">
                         <div className="text-sm font-medium">{addr.recipient_name || panel.user?.nombre || 'Sin nombre'}</div>
-                        <div className="text-sm text-gray-500">{composeAddress(addr)}</div>
-                        <button className="text-blue-600 text-sm mt-1 hover:underline" onClick={() => markAsPrimary(addr.id)} disabled={savingAddr}>
+                        <div className="text-sm text-neutral-500">{composeAddress(addr)}</div>
+                        <button className="text-neutral-900 underline text-sm mt-1 hover:underline" onClick={() => markAsPrimary(addr.id)} disabled={savingAddr}>
                           Marcar como principal
                         </button>
                       </div>
@@ -241,14 +241,14 @@ export default function MiCuentaPage() {
                     {(['recipient_name', 'phone', 'street_address', 'city', 'province', 'postal_code', 'reference'] as const).map((field) => (
                       <div key={field}>
                         <label className="block text-sm mb-1 capitalize">{field.replace('_', ' ')}</label>
-                        <input className="w-full border rounded-lg px-3 py-1.5 text-sm" name={field} value={addrForm[field]} onChange={handleAddr} />
+                        <input className="w-full border  px-3 py-1.5 text-sm" name={field} value={addrForm[field]} onChange={handleAddr} />
                       </div>
                     ))}
                     <div className="flex gap-2">
-                      <button type="submit" className="bg-gray-900 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-gray-800" disabled={savingAddr}>
+                      <button type="submit" className="bg-neutral-900 text-white px-4 py-1.5  text-sm hover:bg-neutral-800" disabled={savingAddr}>
                         {savingAddr ? 'Guardando...' : 'Guardar'}
                       </button>
-                      <button type="button" className="border px-4 py-1.5 rounded-lg text-sm hover:bg-gray-100" onClick={cancelAddr}>Cancelar</button>
+                      <button type="button" className="border px-4 py-1.5  text-sm hover:bg-neutral-100" onClick={cancelAddr}>Cancelar</button>
                     </div>
                   </form>
                 )}
@@ -257,13 +257,13 @@ export default function MiCuentaPage() {
           </div>
 
           {/* Right column - purchases */}
-          <div className="border rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-4 py-3 font-semibold">Mis compras</div>
+          <div className="border border-neutral-200 overflow-hidden">
+            <div className="bg-neutral-50 px-4 py-3 font-semibold">Mis compras</div>
             <div className="p-4">
               {!panel.purchases?.length ? (
-                <div className="text-center py-10 text-gray-500">
+                <div className="text-center py-10 text-neutral-500">
                   <p className="mb-4">Aún no tenés compras registradas.</p>
-                  <Link href="/productos" className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm">Explorar productos</Link>
+                  <Link href="/productos" className="bg-neutral-900 text-white px-4 py-2  text-sm">Explorar productos</Link>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -274,16 +274,16 @@ export default function MiCuentaPage() {
                     return (
                       <button
                         key={order.id}
-                        className="w-full text-left border rounded-lg p-4 hover:bg-gray-50 transition"
+                        className="w-full text-left border  p-4 hover:bg-neutral-50 transition"
                         onClick={() => openDetail(order.id)}
                       >
                         <div className="flex justify-between items-center">
                           <div>
                             <span className="font-medium">{firstName}</span>
-                            {extra > 0 && <span className="ml-2 bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">+{extra}</span>}
-                            <div className="text-sm text-gray-500 mt-1">{formatDate(order.created_at)} · Orden #{order.id}</div>
+                            {extra > 0 && <span className="ml-2 bg-neutral-200 text-neutral-700 text-xs px-2 py-0.5 rounded-full">+{extra}</span>}
+                            <div className="text-sm text-neutral-500 mt-1">{formatDate(order.created_at)} · Orden #{order.id}</div>
                           </div>
-                          <span className="text-gray-400">›</span>
+                          <span className="text-neutral-400">›</span>
                         </div>
                       </button>
                     );
@@ -298,18 +298,18 @@ export default function MiCuentaPage() {
       {/* Order detail modal */}
       {selectedOrderId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={closeDetail}>
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white border-neutral-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center p-4 border-b">
               <h3 className="font-semibold">Orden #{selectedOrderId}</h3>
               <div className="flex items-center gap-2">
                 <button className="border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToPrevOrder} disabled={!canGoPrev || loadingDetail}>Anterior</button>
                 <button className="border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToNextOrder} disabled={!canGoNext || loadingDetail}>Siguiente</button>
-                <button className="text-xl text-gray-500 hover:text-gray-800 ml-2" onClick={closeDetail}>&times;</button>
+                <button className="text-xl text-neutral-500 hover:text-neutral-800 ml-2" onClick={closeDetail}>&times;</button>
               </div>
             </div>
             <div className="p-4">
-              {loadingDetail && <p className="text-center py-8 text-gray-500">Cargando detalles...</p>}
-              {!loadingDetail && !orderDetail && <p className="text-center py-8 text-gray-500">No se pudo cargar la orden.</p>}
+              {loadingDetail && <p className="text-center py-8 text-neutral-500">Cargando detalles...</p>}
+              {!loadingDetail && !orderDetail && <p className="text-center py-8 text-neutral-500">No se pudo cargar la orden.</p>}
               {!loadingDetail && orderDetail && (
                 <>
                   <h4 className="font-medium mb-3">Productos</h4>
@@ -317,7 +317,7 @@ export default function MiCuentaPage() {
                     <div key={i} className="flex justify-between border-b py-3">
                       <div>
                         <div className="font-medium">{item.name}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-neutral-500">
                           {item.quantity} × {formatoPrecio(item.unit_price)}
                           {(item.color || item.talle) && (
                             <span className="ml-1">
@@ -332,7 +332,7 @@ export default function MiCuentaPage() {
                     </div>
                   ))}
 
-                  <div className="bg-gray-50 rounded-lg p-4 mt-4 space-y-1">
+                  <div className="bg-neutral-50  p-4 mt-4 space-y-1">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
                       <span>{formatoPrecio((orderDetail.items || []).reduce((s, i) => s + Number(i.subtotal || 0), 0))}</span>
@@ -351,22 +351,22 @@ export default function MiCuentaPage() {
 
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Dirección de envío</h4>
-                    <div className="border rounded-lg p-3 bg-gray-50">
+                    <div className="border  p-3 bg-neutral-50">
                       <div className="font-medium">{orderDetail.buyer_name || panel.user?.nombre || '-'}</div>
                       <div>{orderDetail.buyer_address || 'Sin dirección registrada'}</div>
-                      {orderDetail.buyer_phone && <div className="text-sm text-gray-500 mt-1">Tel: {orderDetail.buyer_phone}</div>}
+                      {orderDetail.buyer_phone && <div className="text-sm text-neutral-500 mt-1">Tel: {orderDetail.buyer_phone}</div>}
                     </div>
                   </div>
 
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Estado</h4>
-                    <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">{orderDetail.status || 'pendiente'}</span>
+                    <span className="bg-neutral-100 text-neutral-800 px-3 py-1 rounded-full text-sm">{orderDetail.status || 'pendiente'}</span>
                   </div>
                 </>
               )}
             </div>
             <div className="p-4 border-t">
-              <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm" onClick={closeDetail}>Cerrar</button>
+              <button className="bg-neutral-900 text-white px-4 py-2  text-sm" onClick={closeDetail}>Cerrar</button>
             </div>
           </div>
         </div>
