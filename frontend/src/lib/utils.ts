@@ -15,6 +15,11 @@ export const validarCantidad = (cantidad: number | string | undefined): number =
   return n > 0 ? n : 1;
 };
 
+export const formatTalle = (talle: string | null | undefined): string | null => {
+  if (talle == null) return null;
+  return talle.trim() === '' ? 'Unico' : talle;
+};
+
 export const cdnImage = (url: string | undefined, transforms = 'f_auto,q_auto'): string => {
   if (!url || typeof url !== 'string') return url ?? '';
   const marker = '/upload/';

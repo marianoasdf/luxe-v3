@@ -1,11 +1,14 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
-import { formatoPrecio } from '@/lib/utils';
+import { cdnImage, formatTalle, formatoPrecio } from '@/lib/utils';
+
+const cartImageFallback = 'https://picsum.photos/120/120?grayscale&blur=1';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -248,13 +251,39 @@ export default function Header() {
                 <ul className="space-y-6">
                   {carrito.map((item) => (
                     <li key={item.uniqueKey} className="flex gap-4">
+                      <Link
+                        href={`/producto/${item.slug}`}
+                        className="relative h-24 w-20 shrink-0 overflow-hidden bg-neutral-100"
+                        onClick={() => setShowCart(false)}
+                      >
+                        <Image
+                          src={cdnImage(item.img || cartImageFallback)}
+                          alt={item.name}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      </Link>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-neutral-900 truncate">{item.name}</p>
+                        <Link
+                          href={`/producto/${item.slug}`}
+                          className="block text-sm font-medium text-neutral-900 truncate hover:text-neutral-600 transition-colors"
+                          onClick={() => setShowCart(false)}
+                        >
+                          {item.name}
+                        </Link>
+                        {(() => {
+                          const talleLabel = formatTalle(item.talle);
+                          const colorLabel = item.color?.trim() ? item.color : null;
+                          if (!talleLabel && !colorLabel) return null;
+                          return (
                         <p className="text-xs text-neutral-500 mt-0.5">
-                          {item.talle && `Talle: ${item.talle}`}
-                          {item.talle && item.color && ' · '}
-                          {item.color && `Color: ${item.color}`}
+                          {talleLabel && `Talle: ${talleLabel}`}
+                          {talleLabel && colorLabel && ' · '}
+                          {colorLabel && `Color: ${colorLabel}`}
                         </p>
+                          );
+                        })()}
                         <p className="text-sm font-medium text-neutral-900 mt-1">{formatoPrecio(item.price)}</p>
                         <div className="flex items-center gap-3 mt-2">
                           <button

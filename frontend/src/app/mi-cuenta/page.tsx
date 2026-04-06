@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { authFetch } from '@/lib/api';
-import { formatoPrecio, formatDate, composeAddress } from '@/lib/utils';
+import { formatoPrecio, formatDate, formatTalle, composeAddress } from '@/lib/utils';
 import type { AddressRow, OrderRow, DashboardData } from '@/types';
 
 const blankAddress = {
@@ -319,11 +319,11 @@ export default function MiCuentaPage() {
                         <div className="font-medium">{item.name}</div>
                         <div className="text-sm text-neutral-500">
                           {item.quantity} × {formatoPrecio(item.unit_price)}
-                          {(item.color || item.talle) && (
+                          {(item.color || formatTalle(item.talle)) && (
                             <span className="ml-1">
                               {item.color && <>Color: {item.color}</>}
-                              {item.color && item.talle && ' | '}
-                              {item.talle && <>Talle: {item.talle}</>}
+                              {item.color && formatTalle(item.talle) && ' | '}
+                              {formatTalle(item.talle) && <>Talle: {formatTalle(item.talle)}</>}
                             </span>
                           )}
                         </div>

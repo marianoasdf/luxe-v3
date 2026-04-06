@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
-import { formatoPrecio } from '@/lib/utils';
+import { formatTalle, formatoPrecio } from '@/lib/utils';
 
 declare global {
   interface Window {
@@ -503,7 +503,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{item.name}</div>
-                  <div className="text-sm text-neutral-500">Talle: {item.talle} | Color: {item.color}</div>
+                  <div className="text-sm text-neutral-500">Talle: {formatTalle(item.talle) ?? '-'} | Color: {item.color?.trim() || '-'}</div>
                   <div className="text-sm text-neutral-400">x{item.cantidad}</div>
                 </div>
                 <div className="font-semibold text-sm">{formatoPrecio(item.price * item.cantidad)}</div>

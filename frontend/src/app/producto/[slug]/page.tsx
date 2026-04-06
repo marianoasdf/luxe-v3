@@ -58,7 +58,16 @@ function sortTalles(a: TalleOption, b: TalleOption): number {
 function ProductDescription({ text }: { text: string }) {
   if (!text) return null;
 
-  const lines = text.split(/\n/).map((l) => l.trim()).filter(Boolean);
+  const rawLines = text.split(/\n/).map((l) => l.trim());
+  const lines: string[] = [];
+  const precededByBlank = new Set<number>();
+  let lastWasBlank = false;
+  for (const line of rawLines) {
+    if (!line) { lastWasBlank = true; continue; }
+    if (lastWasBlank && lines.length > 0) precededByBlank.add(lines.length);
+    lines.push(line);
+    lastWasBlank = false;
+  }
 
   type Block =
     | { type: 'paragraph'; text: string }
@@ -85,7 +94,8 @@ function ProductDescription({ text }: { text: string }) {
       const looksLikeHeading = line.length < 60 && !/[.,;:]$/.test(line);
       const isFirstLine = blocks.length === 0;
       const nextIsBullet = i + 1 < lines.length && /^[•\-\*]\s*/.test(lines[i + 1]);
-      const isHeading = looksLikeHeading && (isFirstLine || nextIsBullet || lastBlockWasBullets);
+      const afterBlankLine = precededByBlank.has(i);
+      const isHeading = looksLikeHeading && (isFirstLine || nextIsBullet || lastBlockWasBullets || afterBlankLine);
       blocks.push({ type: isHeading ? 'heading' : 'paragraph', text: line });
       lastBlockWasBullets = false;
     }
