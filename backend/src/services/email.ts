@@ -8,7 +8,12 @@ function shouldSendReal(): boolean {
 }
 
 function getBaseUrl(): string {
-  return process.env.VERIFICATION_BASE_URL ?? 'http://localhost:3000';
+  const url = process.env.VERIFICATION_BASE_URL;
+  if (url) return url;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('VERIFICATION_BASE_URL es obligatorio en producción.');
+  }
+  return 'http://localhost:3000';
 }
 
 interface SendVerificationParams {

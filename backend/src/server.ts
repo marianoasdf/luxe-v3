@@ -17,6 +17,26 @@ import paymentRoutes from './routes/paymentRoutes';
 const app = express();
 const PORT = parseInt(process.env.PORT || '4000', 10);
 
+// ─── Validación de entorno en producción ────────────────────
+if (process.env.NODE_ENV === 'production') {
+  const urlVars = ['API_BASE_URL', 'VERIFICATION_BASE_URL'] as const;
+  for (const key of urlVars) {
+    const val = process.env[key] ?? '';
+    if (!val) {
+      console.error(`[FATAL] ${key} es obligatorio en producción.`);
+      process.exit(1);
+    }
+    if (/localhost|127\.0\.0\.1/i.test(val)) {
+      console.error(`[FATAL] ${key} apunta a localhost en producción.`);
+      process.exit(1);
+    }
+  }
+  if (!process.env.CORS_ALLOWED_ORIGINS) {
+    console.error('[FATAL] CORS_ALLOWED_ORIGINS es obligatorio en producción.');
+    process.exit(1);
+  }
+}
+
 // Body parsing
 app.use(express.json());
 

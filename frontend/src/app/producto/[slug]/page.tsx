@@ -243,10 +243,19 @@ export default function ProductoDetallePage() {
   }, [variants, talle, color, producto]);
 
   const varianteSeleccionada = useMemo(() => {
-    if (!variants.length || !color) return null;
-    return variants.find(
-      (v) => getTalleValue(v) === talle && v.option_values?.color === color,
-    ) || null;
+    if (!variants.length) return null;
+
+    const requiereTalle = variants.some((v) => Boolean(getTalleValue(v)));
+    const requiereColor = variants.some((v) => Boolean(v.option_values?.color));
+
+    if (requiereTalle && talle == null) return null;
+    if (requiereColor && !color) return null;
+
+    return variants.find((v) => {
+      const sameTalle = !requiereTalle || getTalleValue(v) === talle;
+      const sameColor = !requiereColor || (v.option_values?.color || '') === color;
+      return sameTalle && sameColor;
+    }) || null;
   }, [variants, talle, color]);
 
   const imagenesGaleria = useMemo(() => {
@@ -262,6 +271,11 @@ export default function ProductoDetallePage() {
     const n = Number(varianteSeleccionada.stock);
     return Number.isFinite(n) && n >= 0 ? n : 0;
   }, [varianteSeleccionada]);
+
+  const sinStockTotal = useMemo(() => {
+    if (!variants.length) return false;
+    return variants.every((v) => Number(v.stock || 0) <= 0);
+  }, [variants]);
 
   useEffect(() => {
     if (stockActual != null && stockActual > 0 && Number(cantidad) > stockActual) {
@@ -310,6 +324,7 @@ export default function ProductoDetallePage() {
     });
 
   const disableAdd =
+    sinStockTotal ||
     (colorOptions.length > 0 && !color) ||
     (talleOptions.length > 0 && talle == null) ||
     stockActual === 0;
@@ -355,7 +370,11 @@ export default function ProductoDetallePage() {
         {/* Info */}
         <div>
           <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-3">{producto.name}</h1>
-          <p className="text-2xl font-semibold text-neutral-900 mb-6">{formatoPrecio(precioActual)}</p>
+          <p className="text-2xl font-semibold text-neutral-900 mb-4">{formatoPrecio(precioActual)}</p>
+
+          {sinStockTotal && (
+            <p className="text-red-500 text-sm mb-5">Sin stock</p>
+          )}
 
           {/* Size selector */}
           {talleOptions.length > 0 && (
@@ -365,16 +384,17 @@ export default function ProductoDetallePage() {
                 {talleOptions.map((t) => {
                   const isSelected = talle === t.value;
                   const isDisabled = !t.enabled;
-                  const isOutOfStock = Boolean(color) && t.enabled && !t.hasStock;
+                  const isOutOfStock = t.enabled && !t.hasStock;
+                  const isDimmed = sinStockTotal || isDisabled || isOutOfStock;
                   return (
                     <button
                       key={t.value || 'unico'}
                       className={`min-w-[56px] px-3 py-1.5 border text-sm transition relative overflow-hidden ${
-                        isSelected
+                        isSelected && !isOutOfStock
                           ? 'bg-neutral-900 text-white border-neutral-900'
                           : 'bg-white text-neutral-900 border-neutral-300 hover:border-neutral-900'
                       }`}
-                      style={{ opacity: isDisabled ? 0.4 : 1 }}
+                      style={{ opacity: isDimmed ? 0.4 : 1 }}
                       onClick={() => handleTalleChange(t.value)}
                       title={!t.enabled ? 'No disponible' : isOutOfStock ? 'Sin stock' : t.value || 'Único'}
                     >
@@ -388,7 +408,7 @@ export default function ProductoDetallePage() {
                   );
                 })}
               </div>
-              {talle == null && <p className="text-sm text-neutral-500 mt-1">Podés elegir un talle primero o seleccionar un color.</p>}
+              {talle == null && !sinStockTotal && <p className="text-sm text-neutral-500 mt-1">Podés elegir un talle primero o seleccionar un color.</p>}
             </div>
           )}
 
@@ -417,12 +437,14 @@ export default function ProductoDetallePage() {
                   );
                 })}
               </div>
-              {!color && <p className="text-sm text-neutral-500 mt-1">Seleccioná un color para ver disponibilidad y comprar.</p>}
+              {!color && !sinStockTotal && <p className="text-sm text-neutral-500 mt-1">Seleccioná un color para ver disponibilidad y comprar.</p>}
             </div>
           )}
 
           {/* Quantity / Out of stock */}
-          {stockActual === 0 && varianteSeleccionada ? (
+          {sinStockTotal ? (
+            null
+          ) : stockActual === 0 && varianteSeleccionada ? (
             <p className="text-red-500 text-sm mb-4">Sin stock para esta combinación.</p>
           ) : (
             <div className="mb-6">
