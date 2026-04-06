@@ -120,7 +120,7 @@ app.listen(PORT, () => {
     const interval = 14 * 60 * 1000; // 14 minutos (Render duerme a los 15)
     setInterval(async () => {
       try {
-        const res = await fetch(`${selfUrl}api/_app_ping`);
+        const res = await fetch(`${selfUrl}/api/_app_ping`);
         console.log(`[keep-alive] ping ${res.status}`);
       } catch (err) {
         console.warn('[keep-alive] ping falló:', (err as Error).message);

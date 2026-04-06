@@ -1,5 +1,18 @@
 import Link from 'next/link';
 
+const PAYMENT_METHODS = [
+  { name: 'Visa', src: 'https://http2.mlstatic.com/storage/logos-api-admin/d589be70-eb86-11e9-b9a8-097ac027487d-xl@2x.png' },
+  { name: 'Mastercard', src: 'https://http2.mlstatic.com/storage/logos-api-admin/0daa1670-5c81-11ec-ae75-df2bef173be2-xl@2x.png' },
+  { name: 'American Express', src: 'https://http2.mlstatic.com/storage/logos-api-admin/b08cf800-4c1a-11e9-9888-a566cbf302df-xl@2x.png' },
+  { name: 'Maestro', src: 'https://http2.mlstatic.com/storage/logos-api-admin/ce454480-445f-11eb-bf78-3b1ee7bf744c-xl@2x.png' },
+  { name: 'Naranja', src: 'https://http2.mlstatic.com/storage/logos-api-admin/af139ad0-d705-11ee-8925-8314c09d1640-xl@2x.png' },
+  { name: 'Cabal', src: 'https://http2.mlstatic.com/storage/logos-api-admin/8a6e52e0-199a-11f1-a055-c93b389430dc-l-r2x.png' },
+  { name: 'Diners', src: 'https://http2.mlstatic.com/storage/logos-api-admin/751ea930-571a-11e8-9a2d-4b2bd7b1bf77-xl@2x.png' },
+  { name: 'Argencard', src: 'https://http2.mlstatic.com/storage/logos-api-admin/d7e55980-f3be-11eb-8e0d-6f4af49bf82e-xl@2x.png' },
+  { name: 'Pago Fácil', src: 'https://www.mercadopago.com/org-img/MP3/API/logos/pagofacil.gif' },
+  { name: 'Rapipago', src: 'https://www.mercadopago.com/org-img/MP3/API/logos/rapipago.gif' },
+];
+
 export default function Footer() {
   return (
     <footer className="bg-neutral-950 text-neutral-400">
@@ -32,9 +45,9 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="flex flex-col md:flex-row md:justify-start md:items-start">
           {/* Brand */}
-          <div className="md:col-span-2">
+                    <div>
             <p className="font-display text-xl text-white mb-3">Lüxe</p>
             <p className="text-sm text-neutral-500 leading-relaxed max-w-sm">
               Local multimarca en Concordia, Entre Ríos.
@@ -58,8 +71,29 @@ export default function Footer() {
             </div>
           </div>
 
+          {/* Medios de pago */}
+                    <div className="flex flex-col items-start md:ml-32">
+            <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Medios de pago</p>
+            <div className="grid grid-cols-4 gap-[6px]">
+              {PAYMENT_METHODS.map((card) => (
+                <div
+                  key={card.name}
+                  title={card.name}
+                  className="w-[46px] h-[32px] bg-white rounded-[2px] flex items-center justify-center"
+                >
+                  <img
+                    src={card.src}
+                    alt={card.name}
+                    className="w-[38px] h-[24px] object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Links */}
-          <div>
+                    <div className="md:w-1/4 md:ml-auto md:-mr-8">
             <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Tienda</p>
             <ul className="space-y-2.5">
               <li><Link href="/productos" className="text-sm text-neutral-500 hover:text-white transition-colors">Shop</Link></li>
@@ -69,15 +103,6 @@ export default function Footer() {
                   WhatsApp
                 </a>
               </li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Cuenta</p>
-            <ul className="space-y-2.5">
-              <li><Link href="/login" className="text-sm text-neutral-500 hover:text-white transition-colors">Ingresar</Link></li>
-              <li><Link href="/register" className="text-sm text-neutral-500 hover:text-white transition-colors">Crear cuenta</Link></li>
-              <li><Link href="/mi-cuenta" className="text-sm text-neutral-500 hover:text-white transition-colors">Mi cuenta</Link></li>
             </ul>
           </div>
         </div>
