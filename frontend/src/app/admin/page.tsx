@@ -326,7 +326,7 @@ export default function AdminProductsPage() {
                     {images.map((img, idx) => (
                       <div
                         key={`${img.url}-${idx}`}
-                        className="relative w-20 h-20 border rounded overflow-hidden cursor-grab"
+                        className="relative w-20 h-20 border rounded overflow-hidden cursor-grab flex flex-col"
                         draggable
                         onDragStart={onDragStart(idx)}
                         onDragOver={onDragOver}
@@ -336,6 +336,24 @@ export default function AdminProductsPage() {
                         <div className="absolute top-0 left-0 right-0 flex justify-between bg-black/40 text-white text-[10px] px-1">
                           <span>{idx === 0 ? 'PPAL' : 'IMG'}</span>
                           <button type="button" onClick={() => removeImage(idx)} className="hover:text-red-300">✕</button>
+                        </div>
+                        {/* URL original y botón copiar mejorados */}
+                        <div className="relative w-full bg-white/90 text-[10px] text-neutral-700 px-1 py-0.5 border-t border-neutral-200 flex items-center gap-1 min-h-[18px]" style={{position:'absolute',bottom:0,left:0,right:0}}>
+                          <span
+                            style={{ userSelect: 'all', overflowWrap: 'anywhere', maxWidth: '80px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', display: 'inline-block' }}
+                            title={img.url}
+                          >
+                            {img.url}
+                          </span>
+                          <button
+                            type="button"
+                            className="ml-auto text-blue-600 hover:underline text-[10px] px-1"
+                            title="Copiar URL"
+                            style={{ lineHeight: 1, padding: 0 }}
+                            onClick={() => { navigator.clipboard.writeText(img.url); }}
+                          >
+                            Copiar
+                          </button>
                         </div>
                       </div>
                     ))}
