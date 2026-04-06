@@ -45,9 +45,9 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="flex flex-col md:flex-row md:justify-start md:items-start">
+        <div className="flex flex-col gap-8 md:flex-row md:justify-start md:items-start">
           {/* Brand */}
-                    <div>
+          <div className="mb-8 md:mb-0">
             <p className="font-display text-xl text-white mb-3">Lüxe</p>
             <p className="text-sm text-neutral-500 leading-relaxed max-w-sm">
               Local multimarca en Concordia, Entre Ríos.
@@ -72,19 +72,19 @@ export default function Footer() {
           </div>
 
           {/* Medios de pago */}
-                    <div className="flex flex-col items-start md:ml-32">
+             <div className="flex flex-col items-start md:ml-16">
             <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Medios de pago</p>
-            <div className="grid grid-cols-4 gap-[6px]">
+            <div className="grid grid-cols-5 sm:grid-cols-4 gap-1.5">
               {PAYMENT_METHODS.map((card) => (
                 <div
                   key={card.name}
                   title={card.name}
-                  className="w-[46px] h-[32px] bg-white rounded-[2px] flex items-center justify-center"
+                  className="w-12 h-8 bg-white rounded-[2px] flex items-center justify-center"
                 >
                   <img
                     src={card.src}
                     alt={card.name}
-                    className="w-[38px] h-[24px] object-contain"
+                    className="w-9 h-6 object-contain"
                     loading="lazy"
                   />
                 </div>
@@ -93,7 +93,7 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-                    <div className="md:w-1/4 md:ml-auto md:-mr-8">
+          <div className="mt-8 md:mt-0 md:ml-44 md:w-[200px]">
             <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Tienda</p>
             <ul className="space-y-2.5">
               <li><Link href="/productos" className="text-sm text-neutral-500 hover:text-white transition-colors">Shop</Link></li>

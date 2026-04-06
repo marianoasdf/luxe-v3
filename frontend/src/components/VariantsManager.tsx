@@ -93,11 +93,21 @@ export default function VariantsManager({ productId, secret, headers, productPri
     e.preventDefault();
     setError('');
     try {
+      // Limpiar la URL de Next.js si corresponde
+      let imagenUrl = form.imagen.trim();
+      // Si es una URL de Next.js, extraer la original
+      if (imagenUrl.startsWith('https://www.luxeargentina.com/_next/image')) {
+        const urlParams = new URL(imagenUrl).searchParams;
+        const original = urlParams.get('url');
+        if (original) {
+          imagenUrl = decodeURIComponent(original);
+        }
+      }
       const payload = {
         option_values: { color: form.color, talle: form.talle },
         price: form.precio,
         stock: form.stock,
-        image_url: form.imagen.trim() || null,
+        image_url: imagenUrl || null,
       };
       const method = editingId ? 'PUT' : 'POST';
       const url = editingId
