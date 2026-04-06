@@ -113,6 +113,21 @@ app.get('/api/_app_ping', (_req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
+
+  // ─── Keep-alive: self-ping cada 14 min para evitar que Render duerma el free tier ───
+  const selfUrl = process.env.API_BASE_URL;
+  if (isProd && selfUrl) {
+    const interval = 14 * 60 * 1000; // 14 minutos (Render duerme a los 15)
+    setInterval(async () => {
+      try {
+        const res = await fetch(`${selfUrl}api/_app_ping`);
+        console.log(`[keep-alive] ping ${res.status}`);
+      } catch (err) {
+        console.warn('[keep-alive] ping falló:', (err as Error).message);
+      }
+    }, interval);
+    console.log(`[keep-alive] self-ping activo cada ${interval / 60000} min → ${selfUrl}api/_app_ping`);
+  }
 });
 
 export default app;

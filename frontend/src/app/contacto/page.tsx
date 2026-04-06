@@ -17,6 +17,15 @@ export default function ContactoPage() {
             </a>
           </div>
           <div>
+            <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-2">Email</h3>
+            <a
+              href="mailto:contacto@luxeargentina.com"
+              className="text-neutral-900 hover:text-neutral-600 transition-colors text-sm"
+            >
+              contacto@luxeargentina.com
+            </a>
+          </div>
+          <div>
             <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-2">Instagram</h3>
             <a
               href="https://www.instagram.com/luxe.arg__/"

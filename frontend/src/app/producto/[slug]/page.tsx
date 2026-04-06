@@ -58,61 +58,149 @@ function sortTalles(a: TalleOption, b: TalleOption): number {
 function ProductDescription({ text }: { text: string }) {
   if (!text) return null;
 
-  const rawLines = text.split(/\n/).map((l) => l.trim());
-  const lines: string[] = [];
-  const precededByBlank = new Set<number>();
-  let lastWasBlank = false;
-  for (const line of rawLines) {
-    if (!line) { lastWasBlank = true; continue; }
-    if (lastWasBlank && lines.length > 0) precededByBlank.add(lines.length);
-    lines.push(line);
-    lastWasBlank = false;
-  }
-
+  type BulletItem = { text: string; icon: 'diamond' | 'check' };
   type Block =
     | { type: 'paragraph'; text: string }
     | { type: 'heading'; text: string }
-    | { type: 'bullets'; items: string[] };
+    | { type: 'bullets'; items: BulletItem[] }
+    | { type: 'meta'; label: string; value: string }
+    | { type: 'spacer' };
+
+  const bulletPattern = /^[•●◦▪■\-*]\s*/;
+  const checkPattern = /^[✓✔☑]\s*/;
+  const metaPattern = /^([^:]{1,24}):\s*(.+)$/;
+  const lines = text.split(/\r?\n/).map((line) => line.trim());
+  const isBulletLine = (line: string) => bulletPattern.test(line);
+  const isCheckLine = (line: string) => checkPattern.test(line);
+  const isMetaLine = (line: string) => metaPattern.test(line);
+  const getBulletItem = (line: string): BulletItem => ({
+    text: line.replace(bulletPattern, '').trim(),
+    icon: 'diamond',
+  });
+  const nextNonBlankIndex = (from: number) => {
+    for (let i = from + 1; i < lines.length; i++) {
+      if (lines[i]) return i;
+    }
+    return -1;
+  };
+  const shouldJoinParagraph = (prev: string, current: string) => {
+    if (!prev) return false;
+    if (/[.!?]$/.test(prev)) return false;
+    if (/^[a-záéíóúñ(]/.test(current)) return true;
+    if (prev.length >= 70) return true;
+    return false;
+  };
+  const isHeadingLine = (line: string, index: number, atSectionStart: boolean, previousWasBullets: boolean) => {
+    if (!line || isMetaLine(line) || isBulletLine(line) || isCheckLine(line)) return false;
+    if (/[.:;]$/.test(line)) return false;
+    const nextIndex = nextNonBlankIndex(index);
+    const nextLine = nextIndex >= 0 ? lines[nextIndex] : '';
+    const nextIsBullet = !!nextLine && (isBulletLine(nextLine) || isCheckLine(nextLine));
+    if (index === 0) return line.length <= 70;
+    if (nextIsBullet) return line.length <= 70;
+    if (previousWasBullets) return line.length <= 45;
+    if (atSectionStart) return line.length <= 45;
+    return false;
+  };
 
   const blocks: Block[] = [];
-  let currentBullets: string[] | null = null;
-  let lastBlockWasBullets = false;
+  let previousWasBullets = false;
+  let atSectionStart = true;
+  let paragraphParts: string[] = [];
+  let bulletItems: BulletItem[] = [];
+
+  const flushParagraph = () => {
+    const value = paragraphParts.join(' ').trim();
+    if (value) blocks.push({ type: 'paragraph', text: value });
+    paragraphParts = [];
+  };
+
+  const flushBullets = () => {
+    if (bulletItems.length) blocks.push({ type: 'bullets', items: bulletItems });
+    bulletItems = [];
+  };
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const isBullet = /^[•\-\*]\s*/.test(line);
-    if (isBullet) {
-      const content = line.replace(/^[•\-\*]\s*/, '');
-      if (!currentBullets) currentBullets = [];
-      currentBullets.push(content);
-    } else {
-      if (currentBullets) {
-        blocks.push({ type: 'bullets', items: currentBullets });
-        currentBullets = null;
-        lastBlockWasBullets = true;
+    if (!line) {
+      flushParagraph();
+      flushBullets();
+      if (blocks.length > 0 && blocks[blocks.length - 1].type !== 'spacer') {
+        blocks.push({ type: 'spacer' });
       }
-      const looksLikeHeading = line.length < 60 && !/[.,;:]$/.test(line);
-      const isFirstLine = blocks.length === 0;
-      const nextIsBullet = i + 1 < lines.length && /^[•\-\*]\s*/.test(lines[i + 1]);
-      const afterBlankLine = precededByBlank.has(i);
-      const isHeading = looksLikeHeading && (isFirstLine || nextIsBullet || lastBlockWasBullets || afterBlankLine);
-      blocks.push({ type: isHeading ? 'heading' : 'paragraph', text: line });
-      lastBlockWasBullets = false;
+      atSectionStart = true;
+      previousWasBullets = false;
+      continue;
     }
+
+    if (isCheckLine(line)) {
+      flushParagraph();
+      flushBullets();
+      const content = line.replace(checkPattern, '').trim();
+      blocks.push({ type: 'heading', text: `✓ ${content}` });
+      atSectionStart = false;
+      previousWasBullets = false;
+      continue;
+    }
+
+    if (isBulletLine(line)) {
+      flushParagraph();
+      bulletItems.push(getBulletItem(line));
+      atSectionStart = false;
+      previousWasBullets = true;
+      continue;
+    }
+
+    flushBullets();
+
+    const metaMatch = line.match(metaPattern);
+    if (metaMatch) {
+      flushParagraph();
+      blocks.push({ type: 'meta', label: metaMatch[1].trim(), value: metaMatch[2].trim() });
+      atSectionStart = false;
+      previousWasBullets = false;
+      continue;
+    }
+
+    if (isHeadingLine(line, i, atSectionStart, previousWasBullets)) {
+      flushParagraph();
+      blocks.push({ type: 'heading', text: line });
+      atSectionStart = false;
+      previousWasBullets = false;
+      continue;
+    }
+
+    const prevLine = paragraphParts[paragraphParts.length - 1] || '';
+    if (paragraphParts.length && !shouldJoinParagraph(prevLine, line)) {
+      flushParagraph();
+    }
+    paragraphParts.push(line);
+    atSectionStart = false;
+    previousWasBullets = false;
   }
-  if (currentBullets) blocks.push({ type: 'bullets', items: currentBullets });
+
+  flushParagraph();
+  flushBullets();
+  if (blocks.length && blocks[blocks.length - 1].type === 'spacer') blocks.pop();
 
   return (
     <div className="text-neutral-500 text-[13.5px] leading-[1.55] tracking-[0.01em]">
       {blocks.map((block, i) => {
-        if (block.type === 'heading')
-          return <p key={i} className="font-display text-[14.5px] text-neutral-700 mt-4 first:mt-0 mb-0.5 tracking-normal">{block.text}</p>;
+        if (block.type === 'spacer')
+          return <div key={i} className="h-3" />;
+        if (block.type === 'heading') {
+          const isCheck = block.text.startsWith('✓');
+          const prevIsCheck = i > 0 && blocks[i - 1].type === 'heading' && (blocks[i - 1] as { text: string }).text.startsWith('✓');
+          return <p key={i} className={`font-display text-[14.5px] text-neutral-700 ${isCheck && prevIsCheck ? 'mt-0' : 'mt-4'} first:mt-0 mb-0.5 tracking-normal`}>{block.text}</p>;
+        }
+        if (block.type === 'meta')
+          return <p key={i} className="text-neutral-500"><span className="text-neutral-700">{block.label}:</span> {block.value}</p>;
         if (block.type === 'paragraph')
           return <p key={i} className="text-neutral-500">{block.text}</p>;
         return (
           <div key={i} className="mb-1 pl-0.5">
             {block.items.map((item, j) => (
-              <p key={j} className="text-neutral-500 flex items-baseline gap-2.5"><span className="text-brand-accent text-[8px] opacity-70">&#9672;</span>{item}</p>
+              <p key={j} className="text-neutral-500 flex items-baseline gap-2.5"><span className={item.icon === 'check' ? 'text-brand-accent text-[10px] opacity-80' : 'text-brand-accent text-[8px] opacity-70'}>{item.icon === 'check' ? '✓' : '\u25C8'}</span>{item.text}</p>
             ))}
           </div>
         );
