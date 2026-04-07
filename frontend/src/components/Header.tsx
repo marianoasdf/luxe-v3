@@ -341,8 +341,23 @@ export default function Header() {
 
   return (
     <>
+      {/* Header fijo superior promos */}
+      <div
+        className="w-full z-[60] sticky top-0 left-0 right-0"
+        style={{ background: '#fcf7ef' }}
+      >
+        <div className="max-w-7xl mx-auto flex items-center justify-center h-8 px-2 md:px-0">
+          <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none">
+            <span role="img" aria-label="Tarjeta">💳</span>
+            3 cuotas sin interés
+            <span className="mx-2 text-[#7a5c2e]">|</span>
+            20% OFF transferencia
+            <span role="img" aria-label="Transferencia">💸</span>
+          </span>
+        </div>
+      </div>
       <nav
-        className={`sticky top-0 left-0 right-0 z-50 h-16 transition-all duration-300 ${
+        className={`sticky top-8 left-0 right-0 z-50 h-16 transition-all duration-300 ${
           scrolled
             ? 'bg-white/90 backdrop-blur-md shadow-sm'
             : 'bg-white'
