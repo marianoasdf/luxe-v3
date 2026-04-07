@@ -395,12 +395,19 @@ export default function ProductoDetallePage() {
     if (stockActual != null && stockActual <= 0) { alert('Esta variante no tiene stock disponible.'); return; }
     const cantidadNormalizada = validarCantidad(cantidad);
     const cantidadFinal = stockActual != null ? Math.min(cantidadNormalizada, stockActual) : cantidadNormalizada;
+    // Imagen de la variante o principal
+    let img = varianteSeleccionada?.image_url?.trim();
+    if (!img) {
+      img = Array.isArray(producto?.images) && producto.images.length > 0
+        ? producto.images[0]
+        : placeholderImg;
+    }
     const item = {
       id: producto.id,
       slug: producto.slug,
       name: producto.name,
       desc: producto.desc,
-      img: imagenesGaleria[imagenSeleccionada] || placeholderImg,
+      img,
       price: precioActual,
       variant_id: varianteSeleccionada?.id || null,
       talle,
