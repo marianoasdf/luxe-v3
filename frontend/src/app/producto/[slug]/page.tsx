@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
 import { generarUniqueKey, validarCantidad, formatoPrecio, cdnImage } from '@/lib/utils';
+import PaymentInfo from '@/components/PaymentInfo';
 import type { VariantRow } from '@/types';
 
 interface ProductDetail {
@@ -476,6 +477,9 @@ export default function ProductoDetallePage() {
         <div>
           <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-3">{producto.name}</h1>
           <p className="text-2xl font-semibold text-neutral-900 mb-4">{formatoPrecio(precioActual)}</p>
+
+            {/* Información de pagos */}
+            <PaymentInfo price={precioActual} />
 
           {sinStockTotal && (
             <p className="text-red-500 text-sm mb-5">Sin stock</p>
