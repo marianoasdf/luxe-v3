@@ -6,7 +6,11 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "db:init": "tsx src/scripts/init_db.ts"
+    "db:init": "tsx src/scripts/init_db.ts",
+    "tokens:cleanup": "tsx src/scripts/cleanup_tokens.ts",
+    "routes:list": "tsx src/scripts/list_routes.ts",
+    "redis:test": "tsx src/scripts/test_redis.ts",
+    "price:update": "tsx src/scripts/update_price.ts"
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -40,3 +44,4 @@
     "typescript": "^5.6.0"
   }
 }
+
