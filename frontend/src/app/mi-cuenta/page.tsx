@@ -328,33 +328,80 @@ export default function MiCuentaPage() {
                           )}
                         </div>
                       </div>
-                      <div className="self-center font-medium">{formatoPrecio(item.subtotal)}</div>
+                      <div className="self-center font-medium">{formatoPrecio(item.unit_price * item.quantity)}</div>
                     </div>
                   ))}
 
+                  {/* Totales mejorados */}
                   <div className="bg-neutral-50  p-4 mt-4 space-y-1">
+                    {/* Subtotal */}
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
-                      <span>{formatoPrecio((orderDetail.items || []).reduce((s, i) => s + Number(i.subtotal || 0), 0))}</span>
+                      <span>{formatoPrecio(orderDetail.original_amount !== undefined && orderDetail.original_amount !== null
+                        ? orderDetail.original_amount
+                        : (orderDetail.items || []).reduce((s, i) => s + Number(i.unit_price || 0) * Number(i.quantity || 1), 0)
+                      )}</span>
                     </div>
+                    {/* Envío */}
                     {orderDetail.shipping_cost != null && (
                       <div className="flex justify-between text-sm">
                         <span>Envío{orderDetail.shipping_method ? ` (${orderDetail.shipping_method})` : ''}</span>
                         <span>{formatoPrecio(orderDetail.shipping_cost)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between font-semibold border-t pt-2">
+                    {/* Total original tachado si hay descuento */}
+                    {(orderDetail.discount_applied !== undefined && orderDetail.discount_applied !== null && orderDetail.discount_applied > 0) && (
+                      <div className="flex justify-between text-sm">
+                        <span>Total:</span>
+                        <span className="line-through text-neutral-500">{formatoPrecio(orderDetail.original_amount ?? 0)}</span>
+                      </div>
+                    )}
+                    {/* Descuento con porcentaje si es 20% */}
+                    {(orderDetail.discount_applied !== undefined && orderDetail.discount_applied !== null && orderDetail.discount_applied > 0) && (
+                      <div className="flex justify-between text-sm">
+                        <span>Descuento{orderDetail.original_amount && Math.abs(orderDetail.discount_applied / orderDetail.original_amount - 0.2) < 0.01 ? ' (20%)' : ''}:</span>
+                        <span className="text-green-700">- {formatoPrecio(orderDetail.discount_applied)}</span>
+                      </div>
+                    )}
+                    {/* Total final */}
+                    <div className="flex justify-between font-semibold border-t pt-2 text-lg">
                       <span>Total</span>
                       <span>{formatoPrecio(orderDetail.total_amount)}</span>
                     </div>
+                    {/* Método de pago */}
+                    <div className="flex justify-between text-sm mt-2">
+                      <span>Método de pago</span>
+                      <span>{orderDetail.mp_payment_status === 'transfer' ? 'Transferencia' : orderDetail.mp_payment_status === 'paid' ? 'Mercado Pago' : '---'}</span>
+                    </div>
                   </div>
 
+                  {/* Dirección de envío mejorada */}
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Dirección de envío</h4>
                     <div className="border  p-3 bg-neutral-50">
-                      <div className="font-medium">{orderDetail.buyer_name || panel.user?.nombre || '-'}</div>
-                      <div>{orderDetail.buyer_address || 'Sin dirección registrada'}</div>
-                      {orderDetail.buyer_phone && <div className="text-sm text-neutral-500 mt-1">Tel: {orderDetail.buyer_phone}</div>}
+                      {(() => {
+                        let addr = orderDetail.buyer_address;
+                        let parsed = null;
+                        if (typeof addr === 'string') {
+                          try { parsed = JSON.parse(addr); } catch {}
+                        } else if (typeof addr === 'object' && addr) {
+                          parsed = addr;
+                        }
+                        if (parsed) {
+                          return <>
+                            <div className="font-medium">{orderDetail.buyer_name || panel.user?.nombre || '-'}</div>
+                            <div>{parsed.street || parsed.street_address}{parsed.street || parsed.street_address ? ', ' : ''}{parsed.city}{parsed.city ? ', ' : ''}{parsed.province}{parsed.zip || parsed.postal_code ? ' (' + (parsed.zip || parsed.postal_code) + ')' : ''}</div>
+                            {parsed.phone && <div className="text-sm text-neutral-500 mt-1">Tel: {parsed.phone}</div>}
+                            {parsed.reference && <div className="text-sm text-neutral-500 mt-1">{parsed.reference}</div>}
+                          </>;
+                        } else {
+                          return <>
+                            <div className="font-medium">{orderDetail.buyer_name || panel.user?.nombre || '-'}</div>
+                            <div>{addr || 'Sin dirección registrada'}</div>
+                            {orderDetail.buyer_phone && <div className="text-sm text-neutral-500 mt-1">Tel: {orderDetail.buyer_phone}</div>}
+                          </>;
+                        }
+                      })()}
                     </div>
                   </div>
 

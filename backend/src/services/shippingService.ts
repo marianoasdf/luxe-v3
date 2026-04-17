@@ -276,6 +276,27 @@ function quoteFromFixedTable(params: QuoteParams): ShippingQuote {
   };
 }
 
+// Reglas de envío gratis
+const FREE_SHIPPING_THRESHOLD = 150000; // $150.000
+const FREE_SHIPPING_CITIES: string[] = [];
+
+function isFreeShipping(params: QuoteParams, normalizedShipping: ShippingInput): boolean {
+  const subtotal = Number(params.subtotal ?? 0);
+  const city = normalizeText(normalizedShipping.city);
+  
+  // Envío gratis por monto
+  if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+    return true;
+  }
+  
+  // Envío gratis para ciudades específicas
+  if (FREE_SHIPPING_CITIES.includes(city)) {
+    return true;
+  }
+  
+  return false;
+}
+
 export async function calculateShippingQuote(
   params: QuoteParams,
 ): Promise<ShippingQuote & { shipping: ShippingInput }> {
@@ -293,6 +314,38 @@ export async function calculateShippingQuote(
       cost: 0,
       etaDays: '0',
       source: 'fixed_table',
+      shipping: normalizedShipping,
+    };
+  }
+
+  // Verificar reglas de envío gratis
+  if (isFreeShipping(params, normalizedShipping)) {
+    const city = normalizeText(normalizedShipping.city);
+    const isFreeByCity = FREE_SHIPPING_CITIES.includes(city);
+    const subtotal = Number(params.subtotal ?? 0);
+    const isFreeByAmount = subtotal >= FREE_SHIPPING_THRESHOLD;
+
+    let serviceName = 'Envío gratis';
+    if (isFreeByAmount && isFreeByCity) {
+      serviceName = 'Envío gratis (Concordia + $150.000+)';
+    } else if (isFreeByCity) {
+      serviceName = 'Envío gratis a Concordia';
+    } else if (isFreeByAmount) {
+      serviceName = 'Envío gratis (+$150.000)';
+    }
+
+    // Calcular zona real por código postal
+    const zoneData = inferZoneByPostalCode(normalizedShipping.postalCode);
+
+    return {
+      provider: 'correo_argentino',
+      method: 'correo_argentino',
+      serviceCode: 'free_shipping',
+      serviceName,
+      zone: zoneData.zone,
+      cost: 0,
+      etaDays: String(zoneData.etaDays),
+      source: 'free_shipping_rule',
       shipping: normalizedShipping,
     };
   }

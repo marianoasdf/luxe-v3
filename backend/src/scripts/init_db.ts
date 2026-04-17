@@ -298,9 +298,16 @@ async function main(): Promise<void> {
     console.log('Tabla "orders" creada o ya existe');
     
     await client.query(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`);
-    console.log('Índice idx_orders_status asegurado');
+        console.log('Índice idx_orders_status asegurado');
+
+        // Columnas adicionales para pagos por transferencia
+        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS original_amount NUMERIC(12,2);`);
+        console.log('Asegurada columna "original_amount" en orders');
     
-    await seedProducts();
+        await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_applied NUMERIC(12,2);`);
+        console.log('Asegurada columna "discount_applied" en orders');
+    
+        await seedProducts();
   } catch (err: unknown) {
     console.error('Error al crear la tabla:', err instanceof Error ? err.message : String(err));
     process.exitCode = 1;

@@ -69,7 +69,7 @@ export default function HomePage() {
       {/* ───── HERO ───── */}
       <section className="relative h-[55vh] md:h-[65vh] flex items-center justify-center bg-brand-cream overflow-hidden">
         <Image
-          src="https://picsum.photos/1920/1080?random=50"
+          src="https://res.cloudinary.com/duwxe0z39/image/upload/v1776440123/WhatsApp_Image_2026-04-07_at_20.35.41_bcdkmb.jpg"
           alt="Lüxe Argentina"
           fill
           className="object-cover opacity-40"

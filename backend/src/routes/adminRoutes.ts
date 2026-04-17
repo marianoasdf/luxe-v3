@@ -18,6 +18,7 @@ import {
 } from '../controllers/productController';
 import { getSignature } from '../controllers/cloudinaryController';
 import { adminListOrders, adminGetOrder, adminGenerateLabel } from '../controllers/shippingController';
+import { adminUpdateOrderStatus } from '../controllers/orderController';
 
 const router = Router();
 
@@ -78,5 +79,7 @@ router.post('/admin/cloudinary/signature', adminCheck, getSignature);
 router.get('/admin/orders', adminCheck, adminListOrders);
 router.get('/admin/orders/:id', adminCheck, adminGetOrder);
 router.post('/admin/orders/:id/shipping-label', adminCheck, adminGenerateLabel);
+router.put('/admin/orders/:id/status', adminCheck, adminUpdateOrderStatus);
 
 export default router;
+

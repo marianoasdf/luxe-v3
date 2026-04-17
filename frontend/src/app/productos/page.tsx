@@ -148,12 +148,13 @@ export default function ProductosPage() {
     );
   }
 
-  return (
+    return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
       <div className="mb-10">
         <h1 className="text-3xl md:text-4xl font-light tracking-tight text-neutral-900">Shop</h1>
         <p className="mt-2 text-neutral-500 text-sm">{productosFiltrados.length} productos</p>
       </div>
+
 
       {/* Mobile filter button */}
       <div className="md:hidden flex justify-end mb-6">

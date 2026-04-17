@@ -229,7 +229,31 @@ export async function getMyDashboard(req: AuthRequest, res: Response): Promise<v
     );
 
     const addresses = await seedAddressesFromOrders(userId, safeUser.nombre, orders);
-    res.json({ user: safeUser, addresses, purchases: orders });
+    res.json({
+      user: safeUser,
+      addresses,
+      purchases: orders.map(order => {
+        // Copiamos la función de normalización aquí para evitar import circular
+        const items = Array.isArray(order.items)
+          ? order.items
+          : typeof order.items === 'string'
+            ? (() => { try { return JSON.parse(order.items); } catch { return []; } })()
+            : [];
+        const subtotal = items.reduce((acc, it) => acc + Number(it.unit_price || 0) * Number(it.quantity || 1), 0);
+        const shipping_cost = order.shipping_cost != null ? Number(order.shipping_cost) : 0;
+        const original_amount = order.original_amount != null ? Number(order.original_amount) : subtotal + shipping_cost;
+        const discount_applied = order.discount_applied != null ? Number(order.discount_applied) : 0;
+        const total_amount = order.total_amount != null ? Number(order.total_amount) : (original_amount - discount_applied);
+        return {
+          ...order,
+          subtotal,
+          shipping_cost,
+          original_amount,
+          discount_applied,
+          total_amount,
+        };
+      })
+    });
   } catch (err) {
     console.error('getMyDashboard error', err);
     res.status(500).json({ error: 'Error obteniendo panel de usuario' });

@@ -55,6 +55,9 @@ export interface OrderRow {
   mp_payment_status?: string | null;
   created_at: string;
   updated_at: string;
+  // Campos opcionales para descuentos y totales originales
+  original_amount?: number;
+  discount_applied?: number;
 }
 
 export interface OrderItem {

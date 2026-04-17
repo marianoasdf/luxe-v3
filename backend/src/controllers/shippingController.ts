@@ -28,7 +28,8 @@ export async function adminListOrders(req: AuthRequest, res: Response): Promise<
     const limit = Math.min(parseInt(String(req.query.limit ?? '50'), 10), 200);
     const { rows } = await pool.query(
       `SELECT id, status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency,
-              items, shipping_method, shipping_cost, tracking_code, mp_payment_status, created_at, updated_at
+              items, shipping_method, shipping_cost, tracking_code, mp_payment_status,
+              original_amount, discount_applied, created_at, updated_at
        FROM orders ORDER BY created_at DESC LIMIT $1`,
       [limit],
     );
@@ -47,7 +48,8 @@ export async function adminGetOrder(req: AuthRequest, res: Response): Promise<vo
 
     const { rows } = await pool.query(
       `SELECT id, status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency,
-              items, shipping_method, shipping_cost, tracking_code, mp_payment_status, created_at, updated_at
+              items, shipping_method, shipping_cost, tracking_code, mp_payment_status,
+              original_amount, discount_applied, created_at, updated_at
        FROM orders WHERE id=$1`,
       [id],
     );
@@ -69,7 +71,8 @@ export async function adminGenerateLabel(req: AuthRequest, res: Response): Promi
 
     const { rows } = await pool.query(
       `SELECT id, status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency,
-              items, shipping_method, shipping_cost, tracking_code, mp_payment_status, created_at, updated_at
+              items, shipping_method, shipping_cost, tracking_code, mp_payment_status,
+              original_amount, discount_applied, created_at, updated_at
        FROM orders WHERE id=$1`,
       [id],
     );
@@ -100,3 +103,4 @@ export async function adminGenerateLabel(req: AuthRequest, res: Response): Promi
     res.status(400).json({ error: msg });
   }
 }
+

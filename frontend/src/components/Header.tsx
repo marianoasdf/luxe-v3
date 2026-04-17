@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,6 +51,40 @@ export default function Header() {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const tickerRef = useRef<HTMLDivElement>(null);
+  // --- PROMO TICKER ---
+  useEffect(() => {
+    const ticker = tickerRef.current;
+    if (!ticker) return;
+    let frame: number;
+    let lastTime = performance.now();
+    let scroll = ticker.scrollLeft;
+    let blockWidth = 0;
+    // Medir el ancho real del primer bloque
+    const track = ticker.firstElementChild as HTMLElement | null;
+    if (!track || track.children.length === 0) return;
+    const firstBlock = track.children[0] as HTMLElement | null;
+    if (!firstBlock) return;
+    blockWidth = firstBlock.offsetWidth;
+    if (!blockWidth) return;
+    // Velocidad en px/seg (ajustable)
+    const SPEED = 60; // px/seg
+    function animate(now: number) {
+      const dt = Math.min((now - lastTime) / 1000, 0.05); // segundos, máx 50ms/frame
+      lastTime = now;
+      scroll += SPEED * dt;
+      // Loop seamless: cuando supera el ancho del primer bloque, restar ese ancho
+      if (scroll >= blockWidth) {
+        // Evitar acumulación de error flotante
+        scroll -= blockWidth;
+      }
+      ticker!.scrollLeft = scroll;
+      frame = requestAnimationFrame(animate);
+    }
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   const navContent = (
@@ -315,6 +349,50 @@ export default function Header() {
 
             {carrito.length > 0 && (
               <div className="p-6 border-t border-neutral-100 space-y-4">
+                {/* Free shipping progress */}
+                {(() => {
+                  const FREE_SHIPPING_THRESHOLD = 150000;
+                  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - total);
+                  const progress = Math.min(100, (total / FREE_SHIPPING_THRESHOLD) * 100);
+                    
+                  if (total >= FREE_SHIPPING_THRESHOLD) {
+                    return (
+                      <div className="bg-green-50 border border-green-200 rounded p-3">
+                        <div className="flex items-center gap-2 text-green-700">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-sm font-medium">¡Envío gratis!</span>
+                        </div>
+                        <p className="text-green-600 text-xs mt-1">
+                          Envío gratis en compras superiores a $150.000
+                        </p>
+                      </div>
+                    );
+                  }
+                    
+                  return (
+                    <div className="bg-amber-50 border border-amber-200 rounded p-3">
+                      <div className="flex items-center gap-2 text-amber-700">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                          <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                        </svg>
+                        <span className="text-sm font-medium">¡Envío gratis!</span>
+                      </div>
+                      <p className="text-amber-600 text-xs mt-1">
+                        Te faltan {formatoPrecio(remaining)} para el envío gratis
+                      </p>
+                      <div className="mt-2 bg-amber-200 rounded-full h-1.5">
+                        <div 
+                          className="bg-green-500 h-1.5 rounded-full transition-all duration-500"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="flex justify-between items-center">
                   <span className="text-sm uppercase tracking-wider text-neutral-500">Total</span>
                   <span className="text-lg font-semibold text-neutral-900">{formatoPrecio(total)}</span>
@@ -342,17 +420,46 @@ export default function Header() {
   return (
     <>
       {/* Header fijo superior promos */}
-      <div
-        className="w-full z-[60] sticky top-0 left-0 right-0"
-        style={{ background: '#fcf7ef' }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-center h-8 px-2 md:px-0">
+      {/* Mobile: ticker */}
+      <div className="w-full z-[60] sticky top-0 left-0 right-0 bg-[#fcf7ef]">
+        <div className="md:hidden h-8 overflow-hidden" ref={tickerRef}>
+          <div className="flex h-8 w-max whitespace-nowrap">
+            {/* Contenido duplicado para loop */}
+            <>
+              <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none px-2">
+                <span role="img" aria-label="Tarjeta">💳</span>
+                3 cuotas sin interés
+                <span className="mx-2 text-[#7a5c2e]">|</span>
+                <span role="img" aria-label="Transferencia">💸</span>
+                20% OFF con transferencia
+                <span className="mx-2 text-[#7a5c2e]">|</span>
+                <span role="img" aria-label="Camión">🚚</span>
+                Envíos gratis desde $150.000
+              </span>
+              <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none px-2">
+                <span role="img" aria-label="Tarjeta">💳</span>
+                3 cuotas sin interés
+                <span className="mx-2 text-[#7a5c2e]">|</span>
+                <span role="img" aria-label="Transferencia">💸</span>
+                20% OFF con transferencia
+                <span className="mx-2 text-[#7a5c2e]">|</span>
+                <span role="img" aria-label="Camión">🚚</span>
+                Envíos gratis desde $150.000
+              </span>
+            </>
+          </div>
+        </div>
+        {/* Desktop: igual que antes */}
+        <div className="hidden md:flex items-center justify-center h-8 px-2 md:px-0">
           <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none">
             <span role="img" aria-label="Tarjeta">💳</span>
             3 cuotas sin interés
             <span className="mx-2 text-[#7a5c2e]">|</span>
-            20% OFF transferencia
             <span role="img" aria-label="Transferencia">💸</span>
+            20% OFF con transferencia
+            <span className="mx-2 text-[#7a5c2e]">|</span>
+            <span role="img" aria-label="Camión">🚚</span>
+            Envíos gratis desde $150.000
           </span>
         </div>
       </div>

@@ -17,12 +17,20 @@ export default function PaymentInfo({ price }: PaymentInfoProps) {
   );
 
   const IconoBillete = () => (
-    <svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a1.5 1.5 0 011.5 1.5h16.5a1.5 1.5 0 011.5-1.5V5.25a1.5 1.5 0 01-1.5-1.5H3.75a1.5 1.5 0 01-1.5 1.5v13.5z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5h-1.5M3 7.5h1.5M21 16.5h-1.5M3 16.5h1.5" />
-    </svg>
-  );
+<svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" strokeWidth={1.2} viewBox="0 0 24 24">
+    <rect x="2" y="6" width="20" height="12" rx="2" />
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M6 12h.01M18 12h.01" strokeLinecap="round" strokeWidth={2} />
+  </svg>
+);
+
+  // Envío gratis superando los 150.000$
+  const IconoEnvioGratis = () => (
+<svg className="w-5 h-5 text-neutral-900" fill="none" stroke="currentColor" strokeWidth={1.2} viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7H4a1 1 0 00-1 1v9h3m0 0a2 2 0 104 0m-4 0h6m4 0a2 2 0 104 0m-4 0h1m-1-10l4.5 4V17h-1.5" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 7v5h6" />
+  </svg>
+);
 
   return (
     <div className="space-y-4 py-5 border-y border-brand-warm/30 my-6 font-sans">
@@ -40,6 +48,13 @@ export default function PaymentInfo({ price }: PaymentInfoProps) {
         <IconoBillete />
         <p className="text-[14px] text-neutral-800 leading-none">
           <span className="font-semibold text-neutral-900">20% de descuento</span> pagando con Transferencia o depósito
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <IconoEnvioGratis />
+        <p className="text-[14px] text-neutral-800 leading-none">
+          <span className="font-semibold text-neutral-900">Envío gratis</span> en compras superiores a <span className="font-semibold">$150.000</span>
         </p>
       </div>
 

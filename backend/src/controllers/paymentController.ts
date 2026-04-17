@@ -176,23 +176,28 @@ export async function createPreference(req: AuthRequest, res: Response): Promise
       items: validItems as unknown as Array<Record<string, unknown>>,
       subtotal: total,
     });
-    const orderTotal = total + Number(shippingQuote.cost ?? 0);
+    const shippingCost = Number(shippingQuote.cost ?? 0);
+    const originalAmount = total + shippingCost; // total sin descuento
+    const discountApplied = 0; // No hay descuento en pagos online
+    const finalTotal = originalAmount - discountApplied; // total final
     const buyerAddress = buildAddressText({ buyer, shipping: shippingQuote.shipping });
 
     const insertOrder = await pool.query(
-      `INSERT INTO orders (status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10) RETURNING id`,
+      `INSERT INTO orders (status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost, original_amount, discount_applied)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12) RETURNING id`,
       [
         'pending',
         buyer.name ?? null,
         buyer.email ?? null,
         buyerAddress ?? null,
         buyer.phone ?? null,
-        orderTotal,
+        finalTotal,
         'ARS',
         JSON.stringify(validItems),
         shippingQuote.method ?? null,
-        Number(shippingQuote.cost ?? 0),
+        shippingCost,
+        originalAmount,
+        discountApplied,
       ],
     );
     const orderId = insertOrder.rows[0].id;
@@ -232,7 +237,7 @@ export async function createPreference(req: AuthRequest, res: Response): Promise
         zone: shippingQuote.zone,
         source: shippingQuote.source,
       },
-      total: orderTotal,
+      total: finalTotal,
     });
   } catch (err) {
     const httpErr = err as HttpError;
@@ -276,23 +281,28 @@ export async function createPayment(req: AuthRequest, res: Response): Promise<vo
       items: validItems as unknown as Array<Record<string, unknown>>,
       subtotal: total,
     });
-    const orderTotal = total + Number(shippingQuote.cost ?? 0);
+    const shippingCost = Number(shippingQuote.cost ?? 0);
+    const originalAmount = total + shippingCost; // total sin descuento
+    const discountApplied = 0; // No hay descuento en pagos online
+    const finalTotal = originalAmount - discountApplied; // total final
     const buyerAddress = buildAddressText({ buyer, shipping: shippingQuote.shipping });
 
     const insertOrder = await pool.query(
-      `INSERT INTO orders (status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10) RETURNING id`,
+      `INSERT INTO orders (status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost, original_amount, discount_applied)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11,$12) RETURNING id`,
       [
         'pending',
         buyer.name ?? null,
         buyer.email ?? null,
         buyerAddress ?? null,
         buyer.phone ?? null,
-        orderTotal,
+        finalTotal,
         'ARS',
         JSON.stringify(validItems),
         shippingQuote.method ?? null,
-        Number(shippingQuote.cost ?? 0),
+        shippingCost,
+        originalAmount,
+        discountApplied,
       ],
     );
     const orderId = insertOrder.rows[0].id;
@@ -340,7 +350,7 @@ export async function createPayment(req: AuthRequest, res: Response): Promise<vo
     const payer = fd.payer as Record<string, unknown> | undefined;
 
     const paymentPayload: Record<string, unknown> = {
-      transaction_amount: Number(orderTotal),
+      transaction_amount: Number(finalTotal),
       token: fd.token,
       description: `Orden #${orderId}`,
       installments: Number(fd.installments ?? 1),
@@ -480,7 +490,7 @@ export async function getOrder(req: AuthRequest, res: Response): Promise<void> {
     const id = parseInt(param(req, 'id'), 10);
     if (!id) { res.status(400).json({ error: 'id inválido' }); return; }
     const { rows } = await pool.query(
-      'SELECT id, status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost, tracking_code, mp_payment_status, created_at, updated_at FROM orders WHERE id=$1',
+      'SELECT id, status, buyer_name, buyer_email, buyer_address, buyer_phone, total_amount, currency, items, shipping_method, shipping_cost, tracking_code, mp_payment_status, original_amount, discount_applied, created_at, updated_at FROM orders WHERE id=$1',
       [id],
     );
     const order = rows[0];
