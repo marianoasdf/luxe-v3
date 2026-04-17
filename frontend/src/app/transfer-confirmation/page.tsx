@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
@@ -17,7 +17,14 @@ interface TransferOrderDetails {
   isExpired: boolean;
 }
 
-export default function TransferConfirmationPage() {
+  return (
+    <Suspense>
+      <TransferConfirmationPageInner />
+    </Suspense>
+  );
+}
+
+function TransferConfirmationPageInner() {
   const searchParams = useSearchParams();
   const { vaciarCarrito } = useCart();
   const [loading, setLoading] = useState(true);

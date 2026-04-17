@@ -239,7 +239,11 @@ export async function getMyDashboard(req: AuthRequest, res: Response): Promise<v
           : typeof order.items === 'string'
             ? (() => { try { return JSON.parse(order.items); } catch { return []; } })()
             : [];
-        const subtotal = items.reduce((acc, it) => acc + Number(it.unit_price || 0) * Number(it.quantity || 1), 0);
+        const subtotal = items.reduce(
+          (acc: number, it: { unit_price?: number | string; quantity?: number | string }) =>
+            acc + Number(it.unit_price || 0) * Number(it.quantity || 1),
+          0
+        );
         const shipping_cost = order.shipping_cost != null ? Number(order.shipping_cost) : 0;
         const original_amount = order.original_amount != null ? Number(order.original_amount) : subtotal + shipping_cost;
         const discount_applied = order.discount_applied != null ? Number(order.discount_applied) : 0;
