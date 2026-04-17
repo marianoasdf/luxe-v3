@@ -17,6 +17,7 @@ interface TransferOrderDetails {
   isExpired: boolean;
 }
 
+export default function TransferConfirmationPage() {
   return (
     <Suspense>
       <TransferConfirmationPageInner />
