@@ -447,12 +447,12 @@ export default function ProductoDetallePage() {
       <div className="grid md:grid-cols-2 gap-8 md:gap-12">
         {/* Gallery */}
         <div>
-          <div className="relative aspect-square overflow-hidden bg-neutral-100 mb-3">
+          <div className="relative aspect-[4/5] overflow-hidden bg-white mb-3">
             <Image
               src={cdnImage(imagenesGaleria[imagenSeleccionada] || placeholderImg)}
               alt={producto.name}
               fill
-              className="object-cover"
+              className="object-contain"
               priority
             />
           </div>
@@ -466,7 +466,7 @@ export default function ProductoDetallePage() {
                   }`}
                   onClick={() => setImagenSeleccionada(idx)}
                 >
-                  <Image src={cdnImage(img)} alt={`${producto.name} - ${idx + 1}`} fill className="object-cover" />
+                  <Image src={cdnImage(img)} alt={`${producto.name} - ${idx + 1}`} fill className="object-contain" />
                 </button>
               ))}
             </div>
