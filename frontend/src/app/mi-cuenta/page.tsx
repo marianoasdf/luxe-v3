@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import ChangePasswordForm from '@/components/ChangePasswordForm';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -33,6 +34,7 @@ export default function MiCuentaPage() {
   const [addrMode, setAddrMode] = useState<'edit' | 'create' | null>(null);
   const [addrForm, setAddrForm] = useState(blankAddress);
   const [savingAddr, setSavingAddr] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -168,8 +170,20 @@ export default function MiCuentaPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="font-display text-2xl md:text-3xl text-neutral-900">Mi cuenta</h1>
+
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-2">
+        <div>
+          <h1 className="font-display text-2xl md:text-3xl text-neutral-900">Mi cuenta</h1>
+          <div className="mt-2">
+            <button
+              type="button"
+              className="text-sm text-blue-700 hover:underline"
+              onClick={() => setShowChangePassword((v) => !v)}
+            >
+              {showChangePassword ? 'Ocultar cambio de contraseña' : 'Cambiar contraseña'}
+            </button>
+          </div>
+        </div>
         <Link href="/productos" className="border border-neutral-900 text-neutral-900 px-4 py-2  text-sm hover:bg-neutral-100">
           Seguir comprando
         </Link>
@@ -177,6 +191,29 @@ export default function MiCuentaPage() {
 
       {loading && <p className="text-neutral-500">Cargando...</p>}
       {error && <div className="bg-red-50 text-red-700 p-3  mb-4">{error}</div>}
+
+      {/* Formulario de cambio de contraseña */}
+      {showChangePassword && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          id="cambiar-password-form"
+          onClick={e => {
+            if (e.target === e.currentTarget) setShowChangePassword(false);
+          }}
+        >
+          <div className="bg-white rounded shadow-lg max-w-md w-full p-6 relative animate-fade-in" onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              className="absolute top-2 right-2 text-2xl text-neutral-400 hover:text-neutral-700"
+              aria-label="Cerrar"
+              onClick={() => setShowChangePassword(false)}
+            >
+              &times;
+            </button>
+            <ChangePasswordForm />
+          </div>
+        </div>
+      )}
 
       {!loading && !error && (
         <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-start">

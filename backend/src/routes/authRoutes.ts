@@ -2,7 +2,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import axios from 'axios';
 import { getRedisClient } from '../config/redisClient';
-import { login, refresh, logout } from '../controllers/authController';
+import { login, refresh, logout, forgotPassword, resetPassword, changePassword } from '../controllers/authController';
+import authMiddleware from '../middleware/authMiddleware';
 
 const router = Router();
 
@@ -77,5 +78,30 @@ router.post(
 
 router.post('/refresh', refresh);
 router.post('/logout', logout);
+
+router.post(
+  '/forgot-password',
+  [body('email').isEmail().withMessage('Email inválido')],
+  forgotPassword,
+);
+
+router.post(
+  '/reset-password',
+  [
+    body('token').isString().notEmpty().withMessage('Token requerido'),
+    body('password').isLength({ min: 6 }).withMessage('Password mínimo 6 caracteres'),
+  ],
+  resetPassword,
+);
+
+router.post(
+  '/change-password',
+  [
+    authMiddleware,
+    body('currentPassword').isLength({ min: 6 }).withMessage('Contraseña actual requerida'),
+    body('newPassword').isLength({ min: 6 }).withMessage('Nueva contraseña mínimo 6 caracteres'),
+  ],
+  changePassword,
+);
 
 export default router;

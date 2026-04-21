@@ -183,6 +183,17 @@ async function main(): Promise<void> {
       expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + interval '1 day')
     );`);
     console.log('Tabla "email_verification_tokens" creada o ya existe');
+
+    // Tabla para recuperación de contraseña
+    await client.query(`CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id BIGSERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+      token TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      used_at TIMESTAMPTZ,
+      expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + interval '1 hour')
+    );`);
+    console.log('Tabla "password_reset_tokens" creada o ya existe');
     
     // =============================
     // Esquema de productos (opción B con variantes)

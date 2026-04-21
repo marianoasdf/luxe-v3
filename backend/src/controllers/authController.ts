@@ -18,7 +18,13 @@ import {
   revokeRefreshTokenById,
 } from '../models/User';
 import { param } from '../types';
-import type { AuthRequest, DeviceInfo } from '../types';
+import type { AuthRequest, DeviceInfo, UserRow } from '../types';
+import {
+  createPasswordResetToken,
+  getValidPasswordResetToken,
+  consumePasswordResetToken,
+} from '../models/PasswordReset';
+import { sendPasswordResetEmail } from '../services/passwordResetEmail';
 
 function buildDeviceInfo(req: AuthRequest): DeviceInfo {
   const ua = UAParser(req.headers['user-agent'] ?? '');
@@ -238,4 +244,92 @@ export async function adminLogoutUser(req: AuthRequest, res: Response): Promise<
     console.error('adminLogoutUser error', err);
     res.status(500).json({ error: 'Error en admin logout' });
   }
+}
+
+// ─── Recuperación de contraseña ───────────────────────────
+// POST /forgot-password
+export async function forgotPassword(req: AuthRequest, res: Response): Promise<void> {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+  const email = req.body.email?.trim().toLowerCase();
+  if (!email) {
+    res.status(400).json({ error: 'Email obligatorio' });
+    return;
+  }
+  const user = await getUserByEmail(email);
+  if (!user) {
+    // No revelar si existe o no
+    res.json({ message: 'Si el email existe, se enviará un enlace para restablecer la contraseña.' });
+    return;
+  }
+  const token = crypto.randomBytes(48).toString('hex');
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+  await createPasswordResetToken(user.id, token, expiresAt);
+  await sendPasswordResetEmail({ to: user.email, token });
+  res.json({ message: 'Si el email existe, se enviará un enlace para restablecer la contraseña.' });
+}
+
+// POST /reset-password
+export async function resetPassword(req: AuthRequest, res: Response): Promise<void> {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+  const { token, password } = req.body;
+  if (!token || !password) {
+    res.status(400).json({ error: 'Token y nueva contraseña obligatorios' });
+    return;
+  }
+  const resetToken = await getValidPasswordResetToken(token);
+  if (!resetToken) {
+    res.status(400).json({ error: 'Token inválido o expirado' });
+    return;
+  }
+  const userModel = await import('../models/User.js') as typeof import('../models/User');
+  const user: UserRow | undefined = await userModel.getUserById(resetToken.user_id);
+  if (!user) {
+    res.status(400).json({ error: 'Usuario no encontrado' });
+    return;
+  }
+  const hash = await bcrypt.hash(password, 10);
+  await consumePasswordResetToken(token);
+  await userModel.updateUserPassword(user.id, hash);
+  res.json({ message: 'Contraseña actualizada correctamente' });
+}
+
+// POST /change-password (usuario autenticado)
+export async function changePassword(req: AuthRequest, res: Response): Promise<void> {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({ errors: errors.array() });
+    return;
+  }
+  const userId = req.user?.sub ? Number(req.user.sub) : null;
+  if (!userId) {
+    res.status(401).json({ error: 'No autenticado' });
+    return;
+  }
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ error: 'Contraseña actual y nueva obligatorias' });
+    return;
+  }
+  const userModel = await import('../models/User.js') as typeof import('../models/User');
+  const user: UserRow | undefined = await userModel.getUserById(userId);
+  if (!user) {
+    res.status(404).json({ error: 'Usuario no encontrado' });
+    return;
+  }
+  const match = await bcrypt.compare(currentPassword, user.password);
+  if (!match) {
+    res.status(400).json({ error: 'Contraseña actual incorrecta' });
+    return;
+  }
+  const hash = await bcrypt.hash(newPassword, 10);
+  await userModel.updateUserPassword(user.id, hash);
+  res.json({ message: 'Contraseña cambiada correctamente' });
 }

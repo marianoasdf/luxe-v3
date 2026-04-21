@@ -224,3 +224,9 @@ export async function incrementTokenVersionAll(): Promise<
   );
   return rows;
 }
+
+export async function updateUserPassword(userId: number, passwordHash: string): Promise<UserRow | undefined> {
+  const q = 'UPDATE usuarios SET password = $1 WHERE id = $2 RETURNING *';
+  const { rows } = await pool.query(q, [passwordHash, userId]);
+  return rows[0];
+}

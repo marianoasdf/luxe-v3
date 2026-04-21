@@ -192,6 +192,9 @@ function LoginContent() {
         )}
         {info && <div className="bg-neutral-50 text-neutral-700 p-3 text-sm border border-neutral-100">{info}</div>}
       </form>
+      <div className="mt-6 text-center">
+        <a href="/forgot-password" className="text-sm text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
+      </div>
     </div>
   );
 }

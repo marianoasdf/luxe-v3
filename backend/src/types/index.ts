@@ -35,6 +35,15 @@ export interface EmailVerificationTokenRow {
   used_at: string | null;
 }
 
+export interface PasswordResetTokenRow {
+  id: number;
+  user_id: number;
+  token: string;
+  created_at: string;
+  used_at: string | null;
+  expires_at: string;
+}
+
 export interface DeviceInfo {
   ip: string | null;
   user_agent: string | null;
