@@ -447,17 +447,67 @@ export default function ProductoDetallePage() {
       <div className="grid md:grid-cols-2 gap-8 md:gap-12">
         {/* Gallery */}
         <div>
-          <div className="relative aspect-[4/5] overflow-hidden bg-white mb-3">
+          <div
+            className="relative aspect-[4/5] overflow-hidden bg-white mb-3 group"
+            onTouchStart={(e) => {
+              if (imagenesGaleria.length < 2) return;
+              (e.currentTarget as any)._touchStartX = e.touches[0].clientX;
+            }}
+            onTouchEnd={(e) => {
+              if (imagenesGaleria.length < 2) return;
+              const startX = (e.currentTarget as any)._touchStartX;
+              if (typeof startX !== 'number') return;
+              const endX = e.changedTouches[0].clientX;
+              const delta = endX - startX;
+              if (Math.abs(delta) > 40) {
+                if (delta < 0 && imagenSeleccionada < imagenesGaleria.length - 1) {
+                  setImagenSeleccionada(imagenSeleccionada + 1);
+                } else if (delta > 0 && imagenSeleccionada > 0) {
+                  setImagenSeleccionada(imagenSeleccionada - 1);
+                }
+              }
+            }}
+          >
             <Image
               src={cdnImage(imagenesGaleria[imagenSeleccionada] || placeholderImg)}
               alt={producto.name}
               fill
-              className="object-contain"
+              className="object-contain transition-all duration-200"
               priority
             />
+            {imagenesGaleria.length > 1 && (
+              <>
+                {/* Flecha izquierda minimalista */}
+                <button
+                  type="button"
+                  aria-label="Anterior"
+                  className="absolute top-1/2 left-2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center opacity-60 transition-opacity focus:outline-none"
+                  style={{ pointerEvents: imagenSeleccionada === 0 ? 'none' : undefined, opacity: imagenSeleccionada === 0 ? 0.10 : undefined, background: 'none', border: 'none' }}
+                  onClick={() => setImagenSeleccionada((prev) => Math.max(0, prev - 1))}
+                  tabIndex={0}
+                >
+                  <svg width="40" height="40" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="20 8 12 16 20 24" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                {/* Flecha derecha minimalista */}
+                <button
+                  type="button"
+                  aria-label="Siguiente"
+                  className="absolute top-1/2 right-2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center opacity-60 transition-opacity focus:outline-none"
+                  style={{ pointerEvents: imagenSeleccionada === imagenesGaleria.length - 1 ? 'none' : undefined, opacity: imagenSeleccionada === imagenesGaleria.length - 1 ? 0.10 : undefined, background: 'none', border: 'none' }}
+                  onClick={() => setImagenSeleccionada((prev) => Math.min(imagenesGaleria.length - 1, prev + 1))}
+                  tabIndex={0}
+                >
+                  <svg width="40" height="40" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polyline points="12 8 20 16 12 24" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </>
+            )}
           </div>
           {imagenesGaleria.length > 1 && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               {imagenesGaleria.map((img, idx) => (
                 <button
                   key={idx}

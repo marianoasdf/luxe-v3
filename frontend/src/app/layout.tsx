@@ -13,8 +13,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" className="overflow-x-hidden">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <script
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           defer
         />
       </head>
-      <body className="bg-white text-neutral-900 antialiased">
+      <body className="bg-white text-neutral-900 antialiased overflow-x-hidden min-h-screen">
         <AuthProvider>
           <CartProvider>
             <Header />
