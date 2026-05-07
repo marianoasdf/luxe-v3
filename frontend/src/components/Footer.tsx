@@ -48,7 +48,13 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,0.8fr)] xl:items-start">
           {/* Brand */}
           <div>
-            <p className="font-display text-xl text-white mb-3">Lüxe</p>
+            <div className="mb-3 leading-none">
+              <span className="flex flex-col items-start gap-[0.22rem]" aria-label="Lüxe Argentina">
+                <span className="font-display text-[2.5rem] tracking-[-0.04em] text-white leading-none">Lüxe</span>
+                <span className="self-stretch h-px bg-neutral-600" />
+                <span className="font-display text-[0.72rem] uppercase tracking-[0.35em] text-neutral-400 leading-none">argentina</span>
+              </span>
+            </div>
             <p className="text-sm text-neutral-500 leading-relaxed max-w-sm">
               Local multimarca en Concordia, Entre Ríos.
               Marcas seleccionadas para tu estilo de todos los días.

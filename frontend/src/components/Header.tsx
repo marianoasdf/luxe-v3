@@ -103,8 +103,12 @@ export default function Header() {
             </svg>
           </button>
 
-          <Link href="/" className="hidden md:block font-display text-xl text-neutral-900">
-            Lüxe
+          <Link href="/" className="hidden md:block leading-none select-none" style={{WebkitTapHighlightColor:'transparent'}}>
+            <span className="flex flex-col items-start gap-[0.2rem]" aria-label="Lüxe Argentina">
+              <span className="font-display text-[2.2rem] tracking-[-0.04em] text-neutral-900 leading-none">Lüxe</span>
+              <span className="self-stretch h-px bg-neutral-300" />
+              <span className="font-display text-[0.65rem] uppercase tracking-[0.35em] text-neutral-400 leading-none">argentina</span>
+            </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -118,8 +122,12 @@ export default function Header() {
         </div>
 
         {/* Mobile centered logo */}
-        <Link href="/" className="md:hidden absolute left-1/2 -translate-x-1/2 font-display text-xl text-neutral-900">
-          Lüxe
+        <Link href="/" className="md:hidden absolute left-1/2 -translate-x-1/2 leading-none select-none" style={{WebkitTapHighlightColor:'transparent'}}>
+          <span className="flex flex-col items-center gap-[0.18rem]" aria-label="Lüxe Argentina">
+            <span className="font-display text-[2rem] tracking-[-0.04em] text-neutral-900 leading-none">Lüxe</span>
+            <span className="self-stretch h-px bg-neutral-300" />
+            <span className="font-display text-[0.62rem] uppercase tracking-[0.35em] text-neutral-400 leading-none">argentina</span>
+          </span>
         </Link>
 
         {/* Right: Auth + Cart */}
@@ -173,7 +181,11 @@ export default function Header() {
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowMenu(false)} />
           <div className="fixed top-0 left-0 h-full w-[min(20rem,calc(100vw-1rem))] max-w-full bg-white z-[70] shadow-2xl flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-neutral-100">
-              <span className="font-display text-lg text-neutral-900">Lüxe</span>
+              <span className="flex flex-col items-start gap-[0.18rem]" aria-label="Lüxe Argentina">
+                <span className="font-display text-[1.9rem] tracking-[-0.04em] text-neutral-900 leading-none">Lüxe</span>
+                <span className="self-stretch h-px bg-neutral-200" />
+                <span className="font-display text-[0.58rem] uppercase tracking-[0.35em] text-neutral-400 leading-none">argentina</span>
+              </span>
               <button
                 onClick={() => setShowMenu(false)}
                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
