@@ -444,11 +444,11 @@ export default function ProductoDetallePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         {/* Gallery */}
-        <div>
+        <div className="min-w-0">
           <div
-            className="relative aspect-[4/5] overflow-hidden bg-white mb-3 group"
+            className="relative aspect-[3/4] overflow-hidden bg-neutral-50 mb-3 group sm:aspect-[4/5]"
             onTouchStart={(e) => {
               if (imagenesGaleria.length < 2) return;
               (e.currentTarget as any)._touchStartX = e.touches[0].clientX;
@@ -472,7 +472,8 @@ export default function ProductoDetallePage() {
               src={cdnImage(imagenesGaleria[imagenSeleccionada] || placeholderImg)}
               alt={producto.name}
               fill
-              className="object-contain transition-all duration-200"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+              className="object-cover transition-all duration-200"
               priority
             />
             {imagenesGaleria.length > 1 && (
@@ -507,16 +508,16 @@ export default function ProductoDetallePage() {
             )}
           </div>
           {imagenesGaleria.length > 1 && (
-            <div className="flex gap-2 mt-2">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2 mt-2">
               {imagenesGaleria.map((img, idx) => (
                 <button
                   key={idx}
-                  className={`relative w-20 h-20 overflow-hidden border-2 transition ${
+                  className={`relative aspect-[3/4] overflow-hidden border-2 transition ${
                     imagenSeleccionada === idx ? 'border-neutral-900 opacity-100' : 'border-transparent opacity-60 hover:opacity-80'
                   }`}
                   onClick={() => setImagenSeleccionada(idx)}
                 >
-                  <Image src={cdnImage(img)} alt={`${producto.name} - ${idx + 1}`} fill className="object-contain" />
+                  <Image src={cdnImage(img)} alt={`${producto.name} - ${idx + 1}`} fill className="object-cover" />
                 </button>
               ))}
             </div>
@@ -524,7 +525,7 @@ export default function ProductoDetallePage() {
         </div>
 
         {/* Info */}
-        <div>
+        <div className="min-w-0">
           <h1 className="font-display text-2xl md:text-3xl text-neutral-900 mb-3">{producto.name}</h1>
           <p className="text-2xl font-semibold text-neutral-900 mb-4">{formatoPrecio(precioActual)}</p>
 
@@ -608,7 +609,7 @@ export default function ProductoDetallePage() {
           ) : (
             <div className="mb-6">
               <label className="text-xs uppercase tracking-wider text-neutral-500 mb-2 block">Cantidad</label>
-              <div className="flex items-center gap-3">
+              <div className="flex w-full max-w-xs items-center gap-3">
                 <button
                   className="w-9 h-9 border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors disabled:opacity-40"
                   onClick={disminuirCantidadLocal}

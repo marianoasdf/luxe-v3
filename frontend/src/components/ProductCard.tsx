@@ -10,8 +10,12 @@ interface ProductCardProps {
 export default function ProductCard({ producto }: ProductCardProps) {
   return (
     <div className="group">
-      <Link href={`/producto/${producto.slug || producto.id}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-100">
+      <Link
+        href={`/producto/${producto.slug || producto.id}`}
+        className="block overflow-hidden select-none"
+        style={{ WebkitTapHighlightColor: 'transparent', WebkitTouchCallout: 'none' }}
+      >
+        <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100">
           <Image
             src={cdnImage(producto.img)}
             alt={producto.name}
@@ -23,7 +27,11 @@ export default function ProductCard({ producto }: ProductCardProps) {
         </div>
       </Link>
       <div className="mt-4 space-y-1.5">
-        <Link href={`/producto/${producto.slug || producto.id}`} className="block">
+        <Link
+          href={`/producto/${producto.slug || producto.id}`}
+          className="block select-none"
+          style={{ WebkitTapHighlightColor: 'transparent', WebkitTouchCallout: 'none' }}
+        >
           <h3 className="text-sm font-medium text-neutral-900 group-hover:text-neutral-600 transition-colors duration-300 leading-tight">
             {producto.name}
           </h3>

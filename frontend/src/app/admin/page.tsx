@@ -276,21 +276,21 @@ export default function AdminProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Admin de Productos</h1>
-        <Link href="/admin/envios" className="border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100">Ir a Admin Envíos</Link>
+        <Link href="/admin/envios" className="inline-flex min-h-11 items-center justify-center border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100 sm:self-start">Ir a Admin Envíos</Link>
       </div>
 
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Admin Secret</label>
-        <input type="password" className="w-full md:w-96 border rounded-lg px-3 py-2" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Pegá el ADMIN_SECRET" />
+        <input type="password" className="min-h-11 w-full max-w-lg border rounded-lg px-3 py-2" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Pegá el ADMIN_SECRET" />
       </div>
 
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid gap-8 xl:grid-cols-2">
         {/* Form */}
-        <div className="border rounded-xl overflow-hidden">
+        <div className="min-w-0 border rounded-xl overflow-hidden">
           <div className="bg-neutral-50 px-4 py-3 font-semibold">{editingId ? 'Editar producto' : 'Crear producto'}</div>
           <div className="p-4">
             <form onSubmit={submit} className="space-y-3">
@@ -308,9 +308,9 @@ export default function AdminProductsPage() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Subir archivos</label>
-                <input type="file" multiple className="w-full border rounded-lg px-3 py-2" onChange={onSelectFiles} disabled={uploading} />
-                <div className="flex gap-2 mt-2">
-                  <button type="button" className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={uploadSelected} disabled={uploading || !pendingFiles.length}>
+                <input type="file" multiple className="min-h-11 w-full border rounded-lg px-3 py-2" onChange={onSelectFiles} disabled={uploading} />
+                <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <button type="button" className="min-h-10 border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={uploadSelected} disabled={uploading || !pendingFiles.length}>
                     {uploading ? 'Subiendo…' : 'Subir'}
                   </button>
                   {pendingFiles.length > 0 && !uploading && <span className="text-sm text-neutral-500">{pendingFiles.length} listo(s)</span>}
@@ -322,11 +322,11 @@ export default function AdminProductsPage() {
               {images.length > 0 && (
                 <div>
                   <label className="block text-sm mb-1">Miniaturas (primera = principal)</label>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(5rem,1fr))] gap-2">
                     {images.map((img, idx) => (
                       <div
                         key={`${img.url}-${idx}`}
-                        className="relative w-20 h-20 border rounded overflow-hidden cursor-grab flex flex-col"
+                        className="relative aspect-square border rounded overflow-hidden cursor-grab flex flex-col"
                         draggable
                         onDragStart={onDragStart(idx)}
                         onDragOver={onDragOver}
@@ -371,9 +371,9 @@ export default function AdminProductsPage() {
                   <option value="draft">draft</option>
                 </select>
               </div>
-              <div className="flex gap-2">
-                <button type="submit" className="bg-neutral-900 text-white px-6 py-2 rounded-lg hover:bg-neutral-800">{editingId ? 'Guardar' : 'Crear'}</button>
-                {editingId && <button type="button" className="border px-6 py-2 rounded-lg hover:bg-neutral-100" onClick={startCreate}>Cancelar</button>}
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button type="submit" className="min-h-11 bg-neutral-900 text-white px-6 py-2 rounded-lg hover:bg-neutral-800">{editingId ? 'Guardar' : 'Crear'}</button>
+                {editingId && <button type="button" className="min-h-11 border px-6 py-2 rounded-lg hover:bg-neutral-100" onClick={startCreate}>Cancelar</button>}
               </div>
             </form>
             {editingId && <VariantsManager productId={editingId} secret={secret} headers={headers} productPrice={form.price} />}
@@ -381,21 +381,21 @@ export default function AdminProductsPage() {
         </div>
 
         {/* List */}
-        <div>
-          <div className="flex justify-between items-center mb-3">
+        <div className="min-w-0">
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold">Productos</h2>
-            <button className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={fetchList} disabled={loading}>
+            <button className="min-h-10 border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100 sm:self-start" onClick={fetchList} disabled={loading}>
               {loading ? 'Actualizando…' : 'Actualizar'}
             </button>
           </div>
           <div className="space-y-2">
             {list.map((p) => (
-              <div key={p.id} className="flex justify-between items-center border rounded-lg p-3">
-                <div>
-                  <div className="font-medium">{p.name}</div>
-                  <div className="text-sm text-neutral-500">{p.slug} · {p.currency} {p.price}</div>
+              <div key={p.id} className="flex flex-col gap-3 border rounded-lg p-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <div className="font-medium break-words">{p.name}</div>
+                  <div className="text-sm text-neutral-500 break-words">{p.slug} · {p.currency} {p.price}</div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-3">
                   <button className="text-neutral-900 text-sm hover:underline" onClick={() => startEdit(p)}>Editar</button>
                   <button className="text-red-600 text-sm hover:underline" onClick={() => remove(p)}>Eliminar</button>
                 </div>

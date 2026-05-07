@@ -53,14 +53,14 @@ export default function ChangePasswordForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto py-8">
-      <h2 className="text-xl font-bold mb-4">Cambiar contraseña</h2>
+    <div className="w-full py-2 sm:py-4">
+      <h2 className="mb-4 text-xl font-bold">Cambiar contraseña</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="password"
           name="currentPassword"
           placeholder="Contraseña actual"
-          className="w-full border px-4 py-2 rounded"
+          className="min-h-11 w-full rounded border px-4 py-2.5"
           value={currentPassword}
           onChange={e => setCurrentPassword(e.target.value)}
           required
@@ -69,7 +69,7 @@ export default function ChangePasswordForm() {
           type="password"
           name="newPassword"
           placeholder="Nueva contraseña"
-          className="w-full border px-4 py-2 rounded"
+          className="min-h-11 w-full rounded border px-4 py-2.5"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           required
@@ -78,14 +78,14 @@ export default function ChangePasswordForm() {
           type="password"
           name="confirm"
           placeholder="Repetir nueva contraseña"
-          className="w-full border px-4 py-2 rounded"
+          className="min-h-11 w-full rounded border px-4 py-2.5"
           value={confirm}
           onChange={e => setConfirm(e.target.value)}
           required
         />
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded disabled:opacity-50"
+          className="min-h-11 w-full rounded bg-black px-4 py-2.5 text-white disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Cambiando..." : "Cambiar contraseña"}

@@ -23,6 +23,7 @@ export default function Header() {
   } = useCart();
 
   const pathname = usePathname();
+  const isHome = pathname === '/';
   const loginHref = `/login?from=${encodeURIComponent(pathname)}`;
 
   const [showMenu, setShowMenu] = useState(false);
@@ -170,7 +171,7 @@ export default function Header() {
       {showMenu && (
         <>
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowMenu(false)} />
-          <div className="fixed top-0 left-0 h-full w-80 bg-white z-[70] shadow-2xl flex flex-col">
+          <div className="fixed top-0 left-0 h-full w-[min(20rem,calc(100vw-1rem))] max-w-full bg-white z-[70] shadow-2xl flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-neutral-100">
               <span className="font-display text-lg text-neutral-900">Lüxe</span>
               <button
@@ -252,7 +253,7 @@ export default function Header() {
       {showCart && (
         <>
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowCart(false)} />
-          <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl flex flex-col">
+          <div className="fixed top-0 right-0 h-full w-full sm:max-w-md bg-white z-[70] shadow-2xl flex flex-col">
             <div className="flex items-center justify-between p-6 border-b border-neutral-100">
               <h3 className="text-sm font-semibold uppercase tracking-widest text-neutral-900">
                 Carrito ({carrito.length})
@@ -421,7 +422,7 @@ export default function Header() {
     <>
       {/* Header fijo superior promos */}
       {/* Mobile: ticker */}
-      <div className="w-full z-[60] sticky top-0 left-0 right-0 bg-[#fcf7ef]">
+      <div className="fixed top-0 left-0 right-0 z-[60] w-full bg-[#fcf7ef]/95 backdrop-blur-sm">
         <div className="md:hidden h-8 overflow-hidden" ref={tickerRef}>
           <div className="flex h-8 w-max whitespace-nowrap">
             {/* Contenido duplicado para loop */}
@@ -464,14 +465,15 @@ export default function Header() {
         </div>
       </div>
       <nav
-        className={`sticky top-8 left-0 right-0 z-50 h-16 transition-all duration-300 ${
+        className={`fixed top-8 left-0 right-0 z-50 h-16 transition-all duration-300 ${
           scrolled
             ? 'bg-white/90 backdrop-blur-md shadow-sm'
-            : 'bg-white'
+            : 'bg-white/45 backdrop-blur-sm'
         }`}
       >
         {navContent}
       </nav>
+      {!isHome && <div aria-hidden="true" className="h-24" />}
       {offcanvasContent}
     </>
   );

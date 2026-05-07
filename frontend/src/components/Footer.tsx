@@ -45,9 +45,9 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12">
-        <div className="flex flex-col gap-8 md:flex-row md:justify-start md:items-start">
+        <div className="grid gap-10 md:grid-cols-2 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,0.8fr)] xl:items-start">
           {/* Brand */}
-          <div className="mb-8 md:mb-0">
+          <div>
             <p className="font-display text-xl text-white mb-3">Lüxe</p>
             <p className="text-sm text-neutral-500 leading-relaxed max-w-sm">
               Local multimarca en Concordia, Entre Ríos.
@@ -72,9 +72,9 @@ export default function Footer() {
           </div>
 
           {/* Medios de pago */}
-             <div className="flex flex-col items-start md:ml-16">
+          <div className="flex flex-col items-start">
             <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Medios de pago</p>
-            <div className="grid grid-cols-5 sm:grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5">
               {PAYMENT_METHODS.map((card) => (
                 <div
                   key={card.name}
@@ -93,7 +93,7 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-          <div className="mt-8 md:mt-0 md:ml-44 md:w-[200px]">
+          <div>
             <p className="text-xs uppercase tracking-widest text-white font-medium mb-4">Tienda</p>
             <ul className="space-y-2.5">
               <li><Link href="/productos" className="text-sm text-neutral-500 hover:text-white transition-colors">Shop</Link></li>

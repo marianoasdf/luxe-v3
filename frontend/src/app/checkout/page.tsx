@@ -476,11 +476,11 @@ export default function CheckoutPage() {
   }, [modo, paymentMethodSelected, brickMounted, paymentReady, total]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 md:py-16">
+    <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
       <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Finalizá tu compra</h1>
 
       {modo === null && (
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="mb-8 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
           <button className="border border-neutral-900 text-neutral-900 px-6 py-2.5 text-sm uppercase tracking-wider hover:bg-neutral-50 transition-colors" onClick={() => setModo('invitado')}>
             Comprar como invitado
           </button>
@@ -490,7 +490,7 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
         {(modo === 'invitado' || modo === 'logueado') && (
           <div className="bg-neutral-50 p-6 border border-neutral-100 space-y-6">
             {/* Datos del comprador */}
@@ -515,16 +515,16 @@ export default function CheckoutPage() {
             {/* Dirección de envío SIEMPRE visible */}
             <div className="mt-6">
               <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Dirección de envío</h3>
-              <div className="grid grid-cols-3 gap-2 mb-2">
-                <div className="col-span-1">
+              <div className="mb-2 grid gap-2 sm:grid-cols-3">
+                <div>
                   <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Código postal</label>
                   <input type="text" name="postalCode" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.postalCode} onChange={handleShippingChange} />
                 </div>
-                <div className="col-span-1">
+                <div>
                   <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Provincia</label>
                   <input type="text" name="province" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.province} onChange={handleShippingChange} />
                 </div>
-                <div className="col-span-1">
+                <div>
                   <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Ciudad</label>
                   <input type="text" name="city" className="w-full border border-neutral-200 px-4 py-2.5 text-sm focus:outline-none focus:border-neutral-900 transition-colors" value={shipping.city} onChange={handleShippingChange} />
                 </div>
@@ -631,7 +631,7 @@ export default function CheckoutPage() {
                     onClick={() => setPaymentMethodSelected('mercadopago')}
                     className="w-full border border-neutral-900 bg-neutral-900 text-white px-4 py-4 rounded-lg hover:bg-neutral-800 transition-colors"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <span className="font-medium">Pagar con Mercado Pago</span>
                       <span className="text-xs bg-white/20 px-2 py-1 rounded">Tarjetas, efectivo, etc.</span>
                     </div>
@@ -644,7 +644,7 @@ export default function CheckoutPage() {
                     onClick={() => setPaymentMethodSelected('transfer')}
                     className="w-full border border-green-600 text-green-700 px-4 py-4 rounded-lg hover:bg-green-50 transition-colors"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <span className="font-medium">Pagar con transferencia bancaria</span>
                       <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">20% OFF</span>
                     </div>
@@ -718,20 +718,20 @@ export default function CheckoutPage() {
         
 
         {/* Order summary */}
-        <div className="bg-neutral-50 p-6 border border-neutral-100">
+        <div className="bg-neutral-50 p-6 border border-neutral-100 xl:sticky xl:top-24">
           <h3 className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Resumen de compra</h3>
           <div className="space-y-3 mb-4">
             {mounted && carritoNormalizado.map((item) => (
-              <div key={`${item.id}-${item.talle ?? ''}-${item.color ?? ''}`} className="flex items-center gap-3">
+              <div key={`${item.id}-${item.talle ?? ''}-${item.color ?? ''}`} className="flex items-start gap-3">
                 <div className="relative w-14 h-14 overflow-hidden flex-shrink-0">
                   <Image src={item.img || ''} alt={item.name} fill className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{item.name}</div>
-                  <div className="text-sm text-neutral-500">Talle: {formatTalle(item.talle) ?? '-'} | Color: {(item.color ?? '').trim() || '-'}</div>
+                  <div className="font-medium text-sm break-words">{item.name}</div>
+                  <div className="text-sm text-neutral-500 break-words">Talle: {formatTalle(item.talle) ?? '-'} | Color: {(item.color ?? '').trim() || '-'}</div>
                   <div className="text-sm text-neutral-400">x{item.cantidad}</div>
                 </div>
-                <div className="font-semibold text-sm">{formatoPrecio(item.price * item.cantidad)}</div>
+                <div className="font-semibold text-sm text-right">{formatoPrecio(item.price * item.cantidad)}</div>
               </div>
             ))}
           </div>

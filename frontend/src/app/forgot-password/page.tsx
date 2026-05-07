@@ -32,28 +32,30 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto py-12">
-      <h1 className="text-2xl font-bold mb-6">Recuperar contraseña</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="mx-auto w-full max-w-lg px-4 py-12 sm:px-6 md:py-16">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-8">
+        <h1 className="mb-6 text-2xl font-bold">Recuperar contraseña</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
           name="email"
           placeholder="Tu email"
-          className="w-full border px-4 py-2 rounded"
+          className="min-h-11 w-full rounded border px-4 py-2.5"
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
         />
         <button
           type="submit"
-          className="w-full bg-black text-white py-2 rounded disabled:opacity-50"
+          className="min-h-11 w-full rounded bg-black px-4 py-2.5 text-white disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Enviando..." : "Enviar enlace"}
         </button>
-      </form>
-      {message && <div className="mt-4 text-green-600">{message}</div>}
-      {error && <div className="mt-4 text-red-600">{error}</div>}
+        </form>
+        {message && <div className="mt-4 text-green-600">{message}</div>}
+        {error && <div className="mt-4 text-red-600">{error}</div>}
+      </div>
     </div>
   );
 }

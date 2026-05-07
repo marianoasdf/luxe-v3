@@ -123,9 +123,10 @@ export default function RegisterPage() {
     : '';
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16 md:py-20">
-      <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Crear cuenta</h1>
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+    <div className="mx-auto w-full max-w-lg px-4 py-12 sm:px-6 md:py-16">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-8">
+        <h1 className="mb-8 text-center font-display text-2xl text-neutral-900 md:text-3xl">Crear cuenta</h1>
+        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
           <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Nombre</label>
           <input
@@ -171,7 +172,7 @@ export default function RegisterPage() {
         )}
         <button
           type="submit"
-          className="w-full bg-neutral-900 text-white py-3 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50"
+          className="min-h-11 w-full bg-neutral-900 px-4 py-3 text-sm font-medium uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
           disabled={submitting}
         >
           {submitting ? 'Registrando…' : 'Registrarme'}
@@ -182,7 +183,7 @@ export default function RegisterPage() {
             ¡Registro exitoso! Revisa tu email para activar la cuenta.
             <button
               type="button"
-              className="block w-full mt-2 border border-neutral-200 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+              className="mt-2 block min-h-11 w-full border border-neutral-200 px-4 py-2.5 text-sm text-neutral-700 transition-colors hover:bg-neutral-50"
               onClick={handleResend}
               disabled={reenviando || !form.email}
             >
@@ -191,7 +192,8 @@ export default function RegisterPage() {
             {info && <div className="mt-2 bg-neutral-50 text-neutral-700 p-2 text-sm border border-neutral-100">{info}</div>}
           </div>
         )}
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

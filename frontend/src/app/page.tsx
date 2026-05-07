@@ -67,7 +67,7 @@ export default function HomePage() {
   return (
     <div className="bg-white">
       {/* ───── HERO ───── */}
-      <section className="relative h-[55vh] md:h-[65vh] flex items-center justify-center bg-brand-cream overflow-hidden">
+      <section className="relative flex min-h-[26rem] items-center justify-center overflow-hidden bg-brand-cream px-4 pb-20 pt-28 sm:min-h-[32rem] sm:pb-24 sm:pt-32 md:min-h-[36rem] md:px-6 md:pb-24 md:pt-32">
         <Image
           src="https://res.cloudinary.com/duwxe0z39/image/upload/v1776440123/WhatsApp_Image_2026-04-07_at_20.35.41_bcdkmb.jpg"
           alt="Lüxe Argentina"
@@ -77,21 +77,21 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#f5f0eb]/60 to-[#f5f0eb]/80" />
 
-        <div className="relative z-10 text-center px-6 max-w-2xl">
+        <div className="relative z-10 mx-auto max-w-3xl text-center">
           <FadeIn>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-neutral-800 leading-tight">
+            <h1 className="mx-auto max-w-[11ch] font-display text-4xl leading-[0.95] text-neutral-800 sm:max-w-none sm:text-5xl lg:text-6xl">
               Tu estilo, seleccionado
             </h1>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <p className="mt-4 text-neutral-500 text-sm md:text-base max-w-md mx-auto">
+            <p className="mx-auto mt-4 max-w-xl text-balance text-sm text-neutral-500 sm:text-base">
               Local multimarca en Concordia, Entre Ríos. Envíos a todo el país.
             </p>
           </FadeIn>
           <FadeIn delay={0.15}>
             <Link
               href="/productos"
-              className="inline-block mt-8 px-8 py-3 bg-neutral-900 text-white text-sm uppercase tracking-[0.15em] font-medium hover:bg-neutral-700 transition-colors duration-300"
+              className="mt-8 inline-flex min-h-11 items-center justify-center px-6 py-3 text-center text-sm font-medium uppercase tracking-[0.15em] text-white transition-colors duration-300 hover:bg-neutral-700 bg-neutral-900 sm:px-8"
             >
               Ver productos
             </Link>
@@ -103,7 +103,7 @@ export default function HomePage() {
       <section className="py-14 md:py-20">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <FadeIn>
-            <div className="flex items-end justify-between mb-8">
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 className="font-display text-2xl md:text-3xl text-neutral-800">
                   Lo nuevo
@@ -120,7 +120,7 @@ export default function HomePage() {
           </FadeIn>
 
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="aspect-[3/4] bg-neutral-100 rounded-2xl" />
@@ -130,7 +130,7 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
               {productos.map((producto) => (
                 <FadeIn key={producto.id}>
                   <ProductCard producto={producto} />
@@ -206,14 +206,14 @@ export default function HomePage() {
       {/* ───── SOBRE LUXE ───── */}
       <section className="bg-brand-cream py-16 md:py-20">
         <FadeIn>
-          <div className="max-w-3xl mx-auto text-center px-6">
+          <div className="max-w-3xl mx-auto px-6 text-center">
             <h2 className="font-display text-2xl md:text-3xl text-neutral-800 mb-4">
               Lüxe Argentina
             </h2>
-            <p className="text-neutral-500 text-sm md:text-base leading-relaxed max-w-lg mx-auto">
+            <p className="mx-auto max-w-2xl text-balance text-sm leading-relaxed text-neutral-500 md:text-base">
               Somos un local multimarca en Concordia, Entre Ríos. Seleccionamos las mejores marcas para que encuentres tu estilo sin complicaciones. Envíos a todo el país.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-6 text-xs uppercase tracking-widest text-neutral-400">
+            <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3 text-center text-xs uppercase tracking-widest text-neutral-400">
               <span>Remeras</span>
               <span className="text-neutral-300">·</span>
               <span>Buzos</span>
@@ -231,18 +231,18 @@ export default function HomePage() {
       {/* ───── INSTAGRAM CTA ───── */}
       <section className="py-14 md:py-20">
         <FadeIn>
-          <div className="max-w-4xl mx-auto text-center px-6">
+          <div className="max-w-4xl mx-auto px-6 text-center">
             <h2 className="font-display text-2xl md:text-3xl text-neutral-800 mb-3">
               Seguinos en Instagram
             </h2>
-            <p className="text-neutral-400 text-sm mb-6">
+            <p className="mb-6 text-sm text-neutral-400">
               Nuevos ingresos, looks y más en @luxe.arg__
             </p>
             <a
               href="https://www.instagram.com/luxe.arg__/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-neutral-700 text-sm uppercase tracking-widest hover:bg-neutral-900 hover:text-white hover:border-neutral-900 transition-all duration-300"
+              className="inline-flex min-h-11 items-center justify-center gap-2 border border-neutral-300 px-6 py-3 text-center text-sm uppercase tracking-widest text-neutral-700 transition-all duration-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />

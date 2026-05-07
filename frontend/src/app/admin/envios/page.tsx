@@ -156,25 +156,98 @@ export default function AdminEnviosPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Admin de Envios</h1>
-        <Link href="/admin" className="border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100">Ir a Admin Productos</Link>
+        <Link href="/admin" className="inline-flex min-h-11 items-center justify-center border rounded-lg px-4 py-2 text-sm hover:bg-neutral-100 sm:self-start">Ir a Admin Productos</Link>
       </div>
 
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Admin Secret</label>
-        <input type="password" className="w-full md:w-96 border rounded-lg px-3 py-2" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Pega el ADMIN_SECRET" />
+        <input type="password" className="min-h-11 w-full max-w-lg border rounded-lg px-3 py-2" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Pega el ADMIN_SECRET" />
       </div>
 
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 
       <div className="flex justify-end mb-3">
-        <button className="border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={fetchOrders} disabled={loading}>
+        <button className="min-h-10 border rounded-lg px-3 py-1 text-sm hover:bg-neutral-100" onClick={fetchOrders} disabled={loading}>
           {loading ? 'Actualizando...' : 'Actualizar'}
         </button>
       </div>
 
-      <div className="overflow-x-auto border rounded-xl">
+      <div className="space-y-3 lg:hidden">
+        {orders.map((o) => (
+          <div key={o.id} className="rounded-xl border p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-mono text-sm">Orden #{o.id}</div>
+                <div className="text-sm break-words text-neutral-600">{o.email || '-'}</div>
+              </div>
+              <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs ${statusColor(o.status)}`}>{getStatusLabel(o.status)}</span>
+            </div>
+            <div className="grid gap-2 text-sm sm:grid-cols-2">
+              <div><span className="text-neutral-500">Teléfono:</span> {o.shipping_address?.phone || o.buyer_phone || '-'}</div>
+              <div><span className="text-neutral-500">Total:</span> {(() => {
+                if (typeof o.total_amount === 'number' && o.total_amount > 0) return formatoPrecio(o.total_amount || 0);
+                if (typeof o.original_amount === 'number' && o.original_amount > 0) return formatoPrecio(o.original_amount || 0);
+                if (Array.isArray(o.items)) {
+                  const sum = o.items.reduce((acc, it) => acc + ((it.unit_price || 0) * (it.quantity || 1)), 0);
+                  return formatoPrecio(sum);
+                }
+                return formatoPrecio(0);
+              })()}</div>
+              <div><span className="text-neutral-500">Pago:</span> {o.payment_method === 'transfer' ? 'Transferencia' : 'MP'}{o.discount_applied && o.discount_applied > 0 ? ' (-20%)' : ''}</div>
+              <div><span className="text-neutral-500">Envío:</span> {o.envio_tipo === 'correo_argentino' ? 'Correo Argentino' : o.envio_tipo === 'concordia_gratis' ? 'Concordia' : o.envio_tipo === 'retiro_local' ? 'Retiro local' : '-'}</div>
+              <div><span className="text-neutral-500">Tracking:</span> <span className="break-all">{o.envio_tracking || '-'}</span></div>
+              <div><span className="text-neutral-500">Fecha:</span> {formatDate(o.created_at)}</div>
+            </div>
+            <div className="flex flex-wrap gap-3 text-xs">
+              <button className="text-neutral-900 hover:underline" onClick={() => setSelected(o)}>Ver</button>
+              {o.status === 'pending' && (
+                <>
+                  <button className="text-green-700 hover:underline" onClick={() => updateOrderStatus(o.id, 'paid')} disabled={updatingStatus === o.id}>
+                    {updatingStatus === o.id ? '...' : 'Pagar'}
+                  </button>
+                  <button className="text-red-700 hover:underline" onClick={() => updateOrderStatus(o.id, 'cancelled')} disabled={updatingStatus === o.id}>
+                    {updatingStatus === o.id ? '...' : 'Cancelar'}
+                  </button>
+                </>
+              )}
+              {o.envio_tipo === 'correo_argentino' && !o.envio_label_url && (
+                <button
+                  className="text-purple-700 hover:underline"
+                  onClick={() => {
+                    if (o.status !== 'paid' && o.status !== 'approved' && o.status !== 'completed') {
+                      alert('Solo disponible para órdenes pagadas');
+                      return;
+                    }
+                    genLabel(o.id);
+                  }}
+                  disabled={generating === o.id}
+                >
+                  {generating === o.id ? 'Gen...' : 'Etiqueta'}
+                </button>
+              )}
+              {o.envio_tipo === 'correo_argentino' && o.envio_label_url && (
+                <a href={o.envio_label_url} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">
+                  Ver etiqueta
+                </a>
+              )}
+              {o.envio_tipo === 'concordia_gratis' && (o.shipping_address?.phone || o.buyer_phone) && (() => {
+                const rawPhone = o.shipping_address?.phone || o.buyer_phone || '';
+                const phone = String(rawPhone).replace(/[^0-9]/g, '');
+                if (phone.length >= 8 && phone.length <= 15) {
+                  return <a href={`https://wa.me/54${phone}`} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">WhatsApp</a>;
+                }
+                return null;
+              })()}
+              {o.envio_tipo === 'retiro_local' && o.status === 'paid' && <span className="text-green-700">Listo para retirar</span>}
+            </div>
+          </div>
+        ))}
+        {orders.length === 0 && <p className="py-6 text-center text-neutral-500">Sin ordenes...</p>}
+      </div>
+
+      <div className="hidden overflow-x-auto border rounded-xl lg:block">
         <table className="min-w-full text-sm">
           <thead className="bg-neutral-50">
             <tr>
@@ -307,14 +380,14 @@ export default function AdminEnviosPage() {
 
       {/* Detail modal */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4" onClick={() => setSelected(null)}>
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-5 sm:p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="font-bold text-lg">Orden #{selected.id}</h3>
               <button onClick={() => setSelected(null)} className="text-neutral-400 hover:text-neutral-600 text-xl">x</button>
             </div>
             <dl className="space-y-1 text-sm">
-              <div className="flex justify-between"><dt className="text-neutral-500">Email</dt><dd>{selected.email || '-'}</dd></div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between"><dt className="text-neutral-500">Email</dt><dd className="break-all sm:text-right">{selected.email || '-'}</dd></div>
               <div className="flex justify-between">
                 <dt className="text-neutral-500">Subtotal</dt>
                 <dd>{formatoPrecio(Number(selected.original_amount) || 0)}</dd>
@@ -334,11 +407,11 @@ export default function AdminEnviosPage() {
               <div className="flex justify-between"><dt className="text-neutral-500 font-bold">TOTAL FINAL</dt><dd className="font-bold text-green-700 text-lg">{formatoPrecio(selected.total_amount || 0)}</dd></div>
               <div className="flex justify-between"><dt className="text-neutral-500">Metodo de pago</dt><dd>{selected.payment_method === 'transfer' ? 'Transferencia' : 'Mercado Pago'}</dd></div>
               <div className="flex justify-between"><dt className="text-neutral-500">Estado</dt><dd><span className={`px-2 py-0.5 rounded text-xs ${statusColor(selected.status)}`}>{getStatusLabel(selected.status)}</span></dd></div>
-              <div className="flex justify-between"><dt className="text-neutral-500">Payment ID</dt><dd className="font-mono">{selected.payment_id || '-'}</dd></div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between"><dt className="text-neutral-500">Payment ID</dt><dd className="font-mono break-all sm:text-right">{selected.payment_id || '-'}</dd></div>
               {selected.envio_tipo && (
-                <div className="flex justify-between">
+                <div className="flex flex-col gap-1 sm:flex-row sm:justify-between">
                   <dt className="text-neutral-500">Método de Envío</dt>
-                  <dd>
+                  <dd className="sm:text-right">
                     {selected.envio_tipo === 'correo_argentino' && 'Correo Argentino'}
                     {selected.envio_tipo === 'concordia_gratis' && 'Concordia'}
                     {selected.envio_tipo === 'retiro_local' && 'Retiro local'}
@@ -346,27 +419,27 @@ export default function AdminEnviosPage() {
                   </dd>
                 </div>
               )}
-              {selected.envio_tracking && <div className="flex justify-between"><dt className="text-neutral-500">Tracking</dt><dd className="font-mono">{selected.envio_tracking}</dd></div>}
+              {selected.envio_tracking && <div className="flex flex-col gap-1 sm:flex-row sm:justify-between"><dt className="text-neutral-500">Tracking</dt><dd className="font-mono break-all sm:text-right">{selected.envio_tracking}</dd></div>}
               {selected.envio_costo != null && <div className="flex justify-between"><dt className="text-neutral-500">Costo envío</dt><dd>{formatoPrecio(selected.envio_costo)}</dd></div>}
-              {selected.envio_estimacion && <div className="flex justify-between"><dt className="text-neutral-500">Estimación</dt><dd>{selected.envio_estimacion}</dd></div>}
+              {selected.envio_estimacion && <div className="flex flex-col gap-1 sm:flex-row sm:justify-between"><dt className="text-neutral-500">Estimación</dt><dd className="sm:text-right">{selected.envio_estimacion}</dd></div>}
             </dl>
 
             {/* Botones de accion para actualizar estado */}
             {selected.status === 'pending' && (
               <div className="mt-4 p-4 bg-neutral-50 rounded-lg">
                 <p className="text-sm font-medium mb-3">Actualizar estado:</p>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <button
                     onClick={() => updateOrderStatus(selected.id, 'paid')}
                     disabled={updatingStatus === selected.id}
-                    className="flex-1 bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-50"
+                    className="min-h-11 flex-1 bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-50"
                   >
                     {updatingStatus === selected.id ? 'Procesando...' : 'Marcar como Pagado'}
                   </button>
                   <button
                     onClick={() => updateOrderStatus(selected.id, 'cancelled')}
                     disabled={updatingStatus === selected.id}
-                    className="flex-1 bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 disabled:opacity-50"
+                    className="min-h-11 flex-1 bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 disabled:opacity-50"
                   >
                     {updatingStatus === selected.id ? 'Procesando...' : 'Marcar como Cancelado'}
                   </button>

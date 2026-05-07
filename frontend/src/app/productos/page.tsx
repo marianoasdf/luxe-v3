@@ -157,7 +157,7 @@ export default function ProductosPage() {
 
 
       {/* Mobile filter button */}
-      <div className="md:hidden flex justify-end mb-6">
+      <div className="xl:hidden flex justify-end mb-6">
         <button
           className="flex items-center gap-2 border border-neutral-200 px-4 py-2 text-sm text-neutral-700 hover:border-neutral-900 transition-colors"
           onClick={() => setShowFilters(true)}
@@ -173,7 +173,7 @@ export default function ProductosPage() {
       {showFilters && (
         <>
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]" onClick={() => setShowFilters(false)} />
-          <div className="fixed top-0 right-0 h-full w-80 bg-white z-[70] shadow-2xl flex flex-col">
+          <div className="fixed top-0 right-0 h-full w-[min(20rem,calc(100vw-1rem))] max-w-full bg-white z-[70] shadow-2xl flex flex-col">
             <div className="flex justify-between items-center p-6 border-b border-neutral-100">
               <h3 className="text-sm font-semibold uppercase tracking-widest">Filtros</h3>
               <button
@@ -190,9 +190,9 @@ export default function ProductosPage() {
         </>
       )}
 
-      <div className="flex gap-12">
+      <div className="flex flex-col gap-8 xl:flex-row xl:gap-12">
         {/* Desktop sidebar */}
-        <div className="hidden md:block w-56 flex-shrink-0">
+        <div className="hidden xl:block xl:w-56 xl:flex-shrink-0">
           <div className="sticky top-[80px]">
             <p className="text-xs uppercase tracking-widest text-neutral-400 mb-4">Filtros</p>
             {filtrosJSX}
@@ -206,7 +206,7 @@ export default function ProductosPage() {
               <p className="text-neutral-400 text-sm">No se encontraron productos</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {productosFiltrados.map((producto) => (
                 <ProductCard key={producto.id} producto={producto} />
               ))}

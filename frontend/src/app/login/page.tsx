@@ -136,9 +136,10 @@ function LoginContent() {
     : '';
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16 md:py-20">
-      <h1 className="font-display text-2xl md:text-3xl text-neutral-900 text-center mb-8">Iniciar sesión</h1>
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+    <div className="mx-auto w-full max-w-lg px-4 py-12 sm:px-6 md:py-16">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-8">
+        <h1 className="mb-8 text-center font-display text-2xl text-neutral-900 md:text-3xl">Iniciar sesión</h1>
+        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
           <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1.5">Email</label>
           <input
@@ -172,7 +173,7 @@ function LoginContent() {
         </div>
         <button
           type="submit"
-          className="w-full bg-neutral-900 text-white py-3 text-sm uppercase tracking-widest font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50"
+          className="min-h-11 w-full bg-neutral-900 px-4 py-3 text-sm font-medium uppercase tracking-widest text-white transition-colors hover:bg-neutral-800 disabled:opacity-50"
           disabled={submitting}
         >
           {submitting ? 'Iniciando sesión…' : 'Iniciar sesión'}
@@ -183,7 +184,7 @@ function LoginContent() {
         {error?.toLowerCase().includes('verificar tu email') && (
           <button
             type="button"
-            className="w-full border border-neutral-200 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+            className="min-h-11 w-full border border-neutral-200 px-4 py-2.5 text-sm text-neutral-700 transition-colors hover:bg-neutral-50"
             onClick={handleResend}
             disabled={sending || !form.email}
           >
@@ -191,9 +192,10 @@ function LoginContent() {
           </button>
         )}
         {info && <div className="bg-neutral-50 text-neutral-700 p-3 text-sm border border-neutral-100">{info}</div>}
-      </form>
-      <div className="mt-6 text-center">
-        <a href="/forgot-password" className="text-sm text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
+        </form>
+        <div className="mt-6 text-center">
+          <a href="/forgot-password" className="text-sm text-blue-700 hover:underline">¿Olvidaste tu contraseña?</a>
+        </div>
       </div>
     </div>
   );

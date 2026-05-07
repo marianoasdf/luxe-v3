@@ -171,7 +171,7 @@ export default function MiCuentaPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
 
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-2">
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between md:items-center">
         <div>
           <h1 className="font-display text-2xl md:text-3xl text-neutral-900">Mi cuenta</h1>
           <div className="mt-2">
@@ -184,7 +184,7 @@ export default function MiCuentaPage() {
             </button>
           </div>
         </div>
-        <Link href="/productos" className="border border-neutral-900 text-neutral-900 px-4 py-2  text-sm hover:bg-neutral-100">
+        <Link href="/productos" className="inline-flex min-h-11 items-center justify-center border border-neutral-900 px-4 py-2 text-sm text-neutral-900 hover:bg-neutral-100 sm:self-start md:self-auto">
           Seguir comprando
         </Link>
       </div>
@@ -195,13 +195,13 @@ export default function MiCuentaPage() {
       {/* Formulario de cambio de contraseña */}
       {showChangePassword && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4"
           id="cambiar-password-form"
           onClick={e => {
             if (e.target === e.currentTarget) setShowChangePassword(false);
           }}
         >
-          <div className="bg-white rounded shadow-lg max-w-md w-full p-6 relative animate-fade-in" onClick={e => e.stopPropagation()}>
+          <div className="relative w-full max-w-lg rounded bg-white p-5 shadow-lg animate-fade-in sm:p-6" onClick={e => e.stopPropagation()}>
             <button
               type="button"
               className="absolute top-2 right-2 text-2xl text-neutral-400 hover:text-neutral-700"
@@ -216,7 +216,7 @@ export default function MiCuentaPage() {
       )}
 
       {!loading && !error && (
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 items-start">
+        <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
           {/* Left column */}
           <div className="space-y-6">
             {/* User data */}
@@ -235,14 +235,14 @@ export default function MiCuentaPage() {
 
             {/* Primary address */}
             <div className="border border-neutral-200 overflow-hidden">
-              <div className="bg-neutral-50 px-4 py-3 flex justify-between items-center">
+              <div className="flex flex-col gap-3 bg-neutral-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <span className="font-semibold">Dirección principal</span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {primaryAddress && !addrMode && (
-                    <button className="text-sm border rounded px-3 py-1 hover:bg-neutral-100" onClick={startEdit}>Editar</button>
+                    <button className="min-h-10 text-sm border rounded px-3 py-1 hover:bg-neutral-100" onClick={startEdit}>Editar</button>
                   )}
                   {!addrMode && (
-                    <button className="text-sm border border-neutral-900 rounded px-3 py-1 hover:bg-neutral-100" onClick={startCreate}>Agregar nueva</button>
+                    <button className="min-h-10 text-sm border border-neutral-900 rounded px-3 py-1 hover:bg-neutral-100" onClick={startCreate}>Agregar nueva</button>
                   )}
                 </div>
               </div>
@@ -281,11 +281,11 @@ export default function MiCuentaPage() {
                         <input className="w-full border  px-3 py-1.5 text-sm" name={field} value={addrForm[field]} onChange={handleAddr} />
                       </div>
                     ))}
-                    <div className="flex gap-2">
-                      <button type="submit" className="bg-neutral-900 text-white px-4 py-1.5  text-sm hover:bg-neutral-800" disabled={savingAddr}>
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <button type="submit" className="min-h-11 bg-neutral-900 text-white px-4 py-1.5 text-sm hover:bg-neutral-800" disabled={savingAddr}>
                         {savingAddr ? 'Guardando...' : 'Guardar'}
                       </button>
-                      <button type="button" className="border px-4 py-1.5  text-sm hover:bg-neutral-100" onClick={cancelAddr}>Cancelar</button>
+                      <button type="button" className="min-h-11 border px-4 py-1.5 text-sm hover:bg-neutral-100" onClick={cancelAddr}>Cancelar</button>
                     </div>
                   </form>
                 )}
@@ -314,13 +314,13 @@ export default function MiCuentaPage() {
                         className="w-full text-left border  p-4 hover:bg-neutral-50 transition"
                         onClick={() => openDetail(order.id)}
                       >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="font-medium">{firstName}</span>
-                            {extra > 0 && <span className="ml-2 bg-neutral-200 text-neutral-700 text-xs px-2 py-0.5 rounded-full">+{extra}</span>}
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
+                            <span className="font-medium break-words">{firstName}</span>
+                            {extra > 0 && <span className="ml-2 inline-flex bg-neutral-200 text-neutral-700 text-xs px-2 py-0.5 rounded-full">+{extra}</span>}
                             <div className="text-sm text-neutral-500 mt-1">{formatDate(order.created_at)} · Orden #{order.id}</div>
                           </div>
-                          <span className="text-neutral-400">›</span>
+                          <span className="self-end text-neutral-400 sm:self-auto">›</span>
                         </div>
                       </button>
                     );
@@ -335,12 +335,12 @@ export default function MiCuentaPage() {
       {/* Order detail modal */}
       {selectedOrderId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={closeDetail}>
-          <div className="bg-white border-neutral-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-4 border-b">
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto border-neutral-200 bg-white" onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="font-semibold">Orden #{selectedOrderId}</h3>
-              <div className="flex items-center gap-2">
-                <button className="border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToPrevOrder} disabled={!canGoPrev || loadingDetail}>Anterior</button>
-                <button className="border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToNextOrder} disabled={!canGoNext || loadingDetail}>Siguiente</button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button className="min-h-10 border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToPrevOrder} disabled={!canGoPrev || loadingDetail}>Anterior</button>
+                <button className="min-h-10 border rounded px-3 py-1 text-sm disabled:opacity-40" onClick={goToNextOrder} disabled={!canGoNext || loadingDetail}>Siguiente</button>
                 <button className="text-xl text-neutral-500 hover:text-neutral-800 ml-2" onClick={closeDetail}>&times;</button>
               </div>
             </div>
@@ -351,9 +351,9 @@ export default function MiCuentaPage() {
                 <>
                   <h4 className="font-medium mb-3">Productos</h4>
                   {(orderDetail.items || []).map((item, i) => (
-                    <div key={i} className="flex justify-between border-b py-3">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
+                    <div key={i} className="flex flex-col gap-2 border-b py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                      <div className="min-w-0">
+                        <div className="font-medium break-words">{item.name}</div>
                         <div className="text-sm text-neutral-500">
                           {item.quantity} × {formatoPrecio(item.unit_price)}
                           {(item.color || formatTalle(item.talle)) && (
@@ -365,7 +365,7 @@ export default function MiCuentaPage() {
                           )}
                         </div>
                       </div>
-                      <div className="self-center font-medium">{formatoPrecio(item.unit_price * item.quantity)}</div>
+                      <div className="font-medium sm:self-center sm:text-right">{formatoPrecio(item.unit_price * item.quantity)}</div>
                     </div>
                   ))}
 
