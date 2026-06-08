@@ -33,7 +33,7 @@ export interface VariantRow {
   option_values: Record<string, string>;
   price: number;
   stock: number;
-  image_url: string | null;
+  images: ProductImage[];
   weight_grams: number | null;
   dimensions: string | null;
   status: string;

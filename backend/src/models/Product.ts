@@ -6,6 +6,7 @@ import type {
   UpdateProductInput,
   CreateVariantInput,
   UpdateVariantInput,
+  ProductImage,
 } from '../types';
 
 // ─── Public queries ─────────────────────────────────────────
@@ -39,7 +40,18 @@ export async function listVariantsByProductId(
   productId: number,
 ): Promise<VariantRow[]> {
   const { rows } = await pool.query(
-    `SELECT id, sku, barcode, option_values, price, stock, image_url, weight_grams, dimensions, status
+    `SELECT
+       id,
+       product_id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       COALESCE(images, '[]'::jsonb) AS images,
+       weight_grams,
+       dimensions,
+       status
      FROM product_variants
      WHERE product_id = $1 AND status = 'active'
      ORDER BY id`,
@@ -156,7 +168,18 @@ export async function deleteProductAdmin(id: number): Promise<ProductRow | null>
 
 export async function listVariantsAdmin(productId: number): Promise<VariantRow[]> {
   const { rows } = await pool.query(
-    `SELECT id, sku, barcode, option_values, price, stock, image_url, weight_grams, dimensions, status
+    `SELECT
+       id,
+       product_id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       COALESCE(images, '[]'::jsonb) AS images,
+       weight_grams,
+       dimensions,
+       status
      FROM product_variants
      WHERE product_id = $1
      ORDER BY id`,
@@ -175,16 +198,48 @@ export async function createVariantAdmin(
     option_values = {},
     price = 0,
     stock = 0,
-    image_url = null,
+    images = [],
     weight_grams = null,
     dimensions = null,
     status = 'active',
   } = v;
 
+  const normalizedImages = Array.isArray(images)
+    ? images
+        .filter((img): img is ProductImage => Boolean(img) && typeof img === 'object' && typeof img.url === 'string' && img.url.trim() !== '')
+        .map((img) => {
+          const url = img.url.trim();
+          const publicId = typeof img.public_id === 'string' && img.public_id.trim() !== '' ? img.public_id.trim() : undefined;
+          return publicId ? { url, public_id: publicId } : { url };
+        })
+    : [];
+
   const { rows } = await pool.query(
-    `INSERT INTO product_variants (product_id, sku, barcode, option_values, price, stock, image_url, weight_grams, dimensions, status)
-     VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7, $8, $9, $10)
-     RETURNING *`,
+    `INSERT INTO product_variants (
+       product_id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       images,
+       weight_grams,
+       dimensions,
+       status
+     )
+     VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7::jsonb, $8, $9, $10)
+     RETURNING
+       id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       COALESCE(images, '[]'::jsonb) AS images,
+       weight_grams,
+       dimensions,
+       status,
+       product_id`,
     [
       productId,
       sku,
@@ -192,7 +247,7 @@ export async function createVariantAdmin(
       JSON.stringify(option_values),
       price,
       stock,
-      image_url,
+      JSON.stringify(normalizedImages),
       weight_grams,
       dimensions,
       status,
@@ -205,7 +260,20 @@ export async function getVariantById(
   variantId: number,
 ): Promise<VariantRow | null> {
   const { rows } = await pool.query(
-    'SELECT * FROM product_variants WHERE id = $1',
+    `SELECT
+       id,
+       product_id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       COALESCE(images, '[]'::jsonb) AS images,
+       weight_grams,
+       dimensions,
+       status
+     FROM product_variants
+     WHERE id = $1`,
     [variantId],
   );
   return rows[0] ?? null;
@@ -224,24 +292,54 @@ export async function updateVariantAdmin(
     option_values = existing.option_values,
     price = existing.price,
     stock = existing.stock,
-    image_url = existing.image_url,
+    images,
     weight_grams = existing.weight_grams,
     dimensions = existing.dimensions,
     status = existing.status,
   } = v;
 
+  const normalizedImages = Array.isArray(images)
+    ? images
+        .filter((img): img is ProductImage => Boolean(img) && typeof img === 'object' && typeof img.url === 'string' && img.url.trim() !== '')
+        .map((img) => {
+          const url = img.url.trim();
+          const publicId = typeof img.public_id === 'string' && img.public_id.trim() !== '' ? img.public_id.trim() : undefined;
+          return publicId ? { url, public_id: publicId } : { url };
+        })
+    : existing.images ?? [];
+
   const { rows } = await pool.query(
     `UPDATE product_variants 
-     SET sku = $1, barcode = $2, option_values = $3::jsonb, price = $4, stock = $5, image_url = $6, weight_grams = $7, dimensions = $8, status = $9
+     SET
+       sku = $1,
+       barcode = $2,
+       option_values = $3::jsonb,
+       price = $4,
+       stock = $5,
+       images = $6::jsonb,
+       weight_grams = $7,
+       dimensions = $8,
+       status = $9
      WHERE id = $10
-     RETURNING *`,
+     RETURNING
+       id,
+       sku,
+       barcode,
+       option_values,
+       price,
+       stock,
+       COALESCE(images, '[]'::jsonb) AS images,
+       weight_grams,
+       dimensions,
+       status,
+       product_id`,
     [
       sku,
       barcode,
       JSON.stringify(option_values),
       price,
       stock,
-      image_url,
+      JSON.stringify(normalizedImages),
       weight_grams,
       dimensions,
       status,

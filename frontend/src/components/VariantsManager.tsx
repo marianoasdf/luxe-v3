@@ -16,7 +16,8 @@ interface VariantForm {
   talle: string;
   precio: number;
   stock: number;
-  imagen: string;
+  images: string[];
+  newImageUrl: string;
 }
 
 export default function VariantsManager({ productId, secret, headers, productPrice }: VariantsManagerProps) {
@@ -30,7 +31,8 @@ export default function VariantsManager({ productId, secret, headers, productPri
     talle: '',
     precio: Number(productPrice) || 0,
     stock: 0,
-    imagen: '',
+    images: [],
+    newImageUrl: '',
   });
 
   const fetchVariants = async () => {
@@ -41,7 +43,11 @@ export default function VariantsManager({ productId, secret, headers, productPri
       const res = await authFetch(`/api/admin/products/${productId}/variants`, { headers });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Error cargando variantes');
-      setVariants(data.variants || []);
+      const normalized: VariantRow[] = (data.variants || []).map((variant: VariantRow) => ({
+        ...variant,
+        images: Array.isArray(variant.images) ? variant.images : [],
+      }));
+      setVariants(normalized);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error cargando variantes');
     } finally {
@@ -61,7 +67,8 @@ export default function VariantsManager({ productId, secret, headers, productPri
     talle: '',
     precio: Number(productPrice) || 0,
     stock: 0,
-    imagen: '',
+    images: [],
+    newImageUrl: '',
   });
 
   const startCreate = () => {
@@ -77,7 +84,8 @@ export default function VariantsManager({ productId, secret, headers, productPri
       talle: ov.talle || '',
       precio: Number(v.price || productPrice || 0),
       stock: Number(v.stock || 0),
-      imagen: v.image_url || '',
+      images: Array.isArray(v.images) ? v.images.map((img) => img.url) : [],
+      newImageUrl: '',
     });
   };
 
@@ -89,6 +97,27 @@ export default function VariantsManager({ productId, secret, headers, productPri
     }));
   };
 
+  const onNewImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, newImageUrl: e.target.value }));
+  };
+
+  const addImageUrl = () => {
+    const url = form.newImageUrl.trim();
+    if (!url) return;
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.includes(url) ? prev.images : [...prev.images, url],
+      newImageUrl: '',
+    }));
+  };
+
+  const removeImageUrl = (url: string) => {
+    setForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((img) => img !== url),
+    }));
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -97,7 +126,7 @@ export default function VariantsManager({ productId, secret, headers, productPri
         option_values: { color: form.color, talle: form.talle },
         price: form.precio,
         stock: form.stock,
-        image_url: form.imagen.trim() || null,
+        images: form.images.map((url) => ({ url })),
       };
       const method = editingId ? 'PUT' : 'POST';
       const url = editingId
@@ -198,15 +227,39 @@ export default function VariantsManager({ productId, secret, headers, productPri
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm mb-1">Imagen de la variante (URL)</label>
-                <input
-                  type="url"
-                  className="w-full border rounded px-3 py-1.5 text-sm"
-                  name="imagen"
-                  value={form.imagen}
-                  onChange={onChange}
-                  placeholder="https://..."
-                />
+                <label className="block text-sm mb-1">Agregar imagen (URL)</label>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    type="url"
+                    className="w-full border rounded px-3 py-1.5 text-sm"
+                    value={form.newImageUrl}
+                    onChange={onNewImageChange}
+                    placeholder="https://..."
+                  />
+                  <button
+                    type="button"
+                    className="border rounded px-3 py-1.5 text-sm hover:bg-neutral-100"
+                    onClick={addImageUrl}
+                  >
+                    Agregar
+                  </button>
+                </div>
+                {form.images.length > 0 && (
+                  <ul className="mt-3 space-y-2 text-sm">
+                    {form.images.map((url) => (
+                      <li key={url} className="flex items-center justify-between gap-3 border rounded px-3 py-1.5 bg-white">
+                        <span className="truncate" title={url}>{url}</span>
+                        <button
+                          type="button"
+                          className="text-red-600 hover:underline"
+                          onClick={() => removeImageUrl(url)}
+                        >
+                          Quitar
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
             <div className="flex gap-2 mt-3">
@@ -235,6 +288,7 @@ export default function VariantsManager({ productId, secret, headers, productPri
                     <th className="text-left px-3 py-2">Talle</th>
                     <th className="text-left px-3 py-2">Precio</th>
                     <th className="text-left px-3 py-2">Stock</th>
+                    <th className="text-left px-3 py-2">Imágenes</th>
                     <th className="text-left px-3 py-2">Acciones</th>
                   </tr>
                 </thead>
@@ -247,6 +301,7 @@ export default function VariantsManager({ productId, secret, headers, productPri
                         <td className="px-3 py-2">{ov.talle || '-'}</td>
                         <td className="px-3 py-2">$ {Number(v.price || productPrice || 0).toFixed(2)}</td>
                         <td className="px-3 py-2">{v.stock}</td>
+                        <td className="px-3 py-2">{Array.isArray(v.images) ? v.images.length : 0}</td>
                         <td className="px-3 py-2 flex gap-1">
                           <button className="text-neutral-900 hover:underline text-sm" onClick={() => startEdit(v)}>
                             Editar

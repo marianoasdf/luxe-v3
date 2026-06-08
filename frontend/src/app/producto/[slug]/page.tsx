@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
@@ -234,7 +234,10 @@ export default function ProductoDetallePage() {
         if (!res.ok) throw new Error('No se pudo cargar el producto');
         const data = await res.json();
         const p = data.product;
-        const v: VariantRow[] = data.variants || [];
+        const v: VariantRow[] = (data.variants || []).map((variant: VariantRow) => ({
+          ...variant,
+          images: Array.isArray(variant.images) ? variant.images : [],
+        }));
         if (abort) return;
         setProducto({
           id: p.id,
@@ -284,11 +287,6 @@ export default function ProductoDetallePage() {
         setTalle('');
       }
     }
-    const imageUrlsColor = Array.from(new Set(variantsColor.map((v) => v.image_url).filter(Boolean)));
-    if (!imageUrlsColor.length) return;
-    const galleryImages = imagenesGaleria;
-    const idx = galleryImages.findIndex((img) => imageUrlsColor.includes(img));
-    if (idx >= 0) setImagenSeleccionada(idx);
   };
 
   const handleTalleChange = (nuevoTalle: string) => {
@@ -357,13 +355,74 @@ export default function ProductoDetallePage() {
     }) || null;
   }, [variants, talle, color]);
 
+  const variantImagesSeleccionadas = useMemo(() => {
+    const unique: string[] = [];
+    const pushUrls = (images: (string | null | undefined)[]) => {
+      images.forEach((url) => {
+        const normalized = typeof url === 'string' ? url.trim() : '';
+        if (normalized && !unique.includes(normalized)) unique.push(normalized);
+      });
+    };
+
+    if (varianteSeleccionada) {
+      const imgs = Array.isArray(varianteSeleccionada.images)
+        ? varianteSeleccionada.images.map((img) => img?.url)
+        : [];
+      pushUrls(imgs);
+    }
+
+    if (!unique.length && color) {
+      const variantsPorColor = variants.filter((v) => (v.option_values?.color || '') === color);
+      variantsPorColor.forEach((variant) => {
+        const imgs = Array.isArray(variant.images)
+          ? variant.images.map((img) => img?.url)
+          : [];
+        pushUrls(imgs);
+      });
+    }
+
+    return unique;
+  }, [varianteSeleccionada, color, variants]);
+
+  const imagenesProductoOrdenadas = useMemo(() => {
+    const ordered: string[] = [];
+    if (Array.isArray(producto?.images)) {
+      producto.images.forEach((img) => {
+        const normalized = typeof img === 'string' ? img.trim() : '';
+        if (normalized && !ordered.includes(normalized)) ordered.push(normalized);
+      });
+    }
+    return ordered;
+  }, [producto]);
+
+  const imagenesVariantesTotales = useMemo(() => {
+    const ordered: string[] = [];
+    variants.forEach((variant) => {
+      if (Array.isArray(variant.images)) {
+        variant.images.forEach((img) => {
+          const normalized = typeof img?.url === 'string' ? img.url.trim() : '';
+          if (normalized && !ordered.includes(normalized)) ordered.push(normalized);
+        });
+      }
+    });
+    return ordered;
+  }, [variants]);
+
   const imagenesGaleria = useMemo(() => {
-    const variantImages = Array.from(new Set(variants.map((v) => v.image_url).filter(Boolean))) as string[];
-    if (variantImages.length) return variantImages;
-    const base = Array.isArray(producto?.images) ? producto.images.filter(Boolean) : [];
-    const all = Array.from(new Set(base));
-    return all.length ? all : [placeholderImg];
-  }, [producto, variants]);
+    if (variants.length > 0) {
+      if (imagenesVariantesTotales.length) return imagenesVariantesTotales;
+      if (imagenesProductoOrdenadas.length) return imagenesProductoOrdenadas;
+      return [placeholderImg];
+    }
+
+    if (imagenesProductoOrdenadas.length) return imagenesProductoOrdenadas;
+    return [placeholderImg];
+  }, [variants.length, imagenesVariantesTotales, imagenesProductoOrdenadas]);
+
+  const prioritizedImage = variantImagesSeleccionadas[0] ?? null;
+  const variantId = varianteSeleccionada?.id ?? null;
+  const lastVariantIdRef = useRef<number | null>(null);
+  const lastPrioritizedRef = useRef<string | null>(null);
 
   const stockActual = useMemo((): number | null => {
     if (!varianteSeleccionada) return null;
@@ -383,8 +442,26 @@ export default function ProductoDetallePage() {
   }, [stockActual, cantidad]);
 
   useEffect(() => {
-    if (imagenSeleccionada >= imagenesGaleria.length) setImagenSeleccionada(0);
-  }, [imagenSeleccionada, imagenesGaleria.length]);
+    const variantChanged = lastVariantIdRef.current !== variantId;
+    const prioritizedChanged = lastPrioritizedRef.current !== prioritizedImage;
+    if (!variantChanged && !prioritizedChanged) {
+      if (imagenSeleccionada >= imagenesGaleria.length) setImagenSeleccionada(0);
+      return;
+    }
+
+    lastVariantIdRef.current = variantId;
+    lastPrioritizedRef.current = prioritizedImage;
+
+    if (prioritizedImage) {
+      const idx = imagenesGaleria.findIndex((img) => img === prioritizedImage);
+      if (idx >= 0) {
+        setImagenSeleccionada(idx);
+        return;
+      }
+    }
+
+    setImagenSeleccionada((prev) => (prev >= imagenesGaleria.length ? 0 : prev));
+  }, [variantId, prioritizedImage, imagenesGaleria, imagenSeleccionada]);
 
   if (loading) return <div className="max-w-7xl mx-auto px-4 py-16 text-neutral-500">Cargando…</div>;
   if (error) return <div className="max-w-7xl mx-auto px-4 py-16 text-red-600">{error}</div>;
@@ -397,11 +474,10 @@ export default function ProductoDetallePage() {
     const cantidadNormalizada = validarCantidad(cantidad);
     const cantidadFinal = stockActual != null ? Math.min(cantidadNormalizada, stockActual) : cantidadNormalizada;
     // Imagen de la variante o principal
-    let img = varianteSeleccionada?.image_url?.trim();
+    let img = variantImagesSeleccionadas[0];
     if (!img) {
-      img = Array.isArray(producto?.images) && producto.images.length > 0
-        ? producto.images[0]
-        : placeholderImg;
+      const firstProductImage = imagenesProductoOrdenadas[0];
+      img = firstProductImage || placeholderImg;
     }
     const item = {
       id: producto.id,

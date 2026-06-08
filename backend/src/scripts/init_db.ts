@@ -231,17 +231,46 @@ async function main(): Promise<void> {
         option_hash TEXT GENERATED ALWAYS AS (md5(option_values::text)) STORED,
         price NUMERIC(12,2) CHECK (price >= 0),
         stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
-        image_url TEXT,
+        images JSONB NOT NULL DEFAULT '[]'::jsonb,
         weight_grams INTEGER,
         dimensions JSONB,
         status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('draft','active','archived')),
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (product_id, option_hash),
-        CHECK (jsonb_typeof(option_values) = 'object')
+        CHECK (jsonb_typeof(option_values) = 'object'),
+        CHECK (jsonb_typeof(images) = 'array')
       );`;
     await client.query(createVariants);
     console.log('Tabla "product_variants" creada o ya existe');
+
+    await client.query(`ALTER TABLE product_variants ADD COLUMN IF NOT EXISTS images JSONB NOT NULL DEFAULT '[]'::jsonb`);
+    await client.query(`ALTER TABLE product_variants ADD CONSTRAINT product_variants_images_array CHECK (jsonb_typeof(images) = 'array')`)
+      .catch(() => undefined);
+
+    const imageUrlColumn = await client.query(`
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'product_variants'
+        AND column_name = 'image_url'
+      LIMIT 1;
+    `);
+
+    if ((imageUrlColumn.rowCount ?? 0) > 0) {
+      await client.query(`
+        UPDATE product_variants
+        SET images = CASE
+          WHEN images IS NULL OR jsonb_typeof(images) <> 'array' OR jsonb_array_length(images) = 0
+            THEN jsonb_build_array(jsonb_build_object('url', image_url))
+          ELSE images
+        END
+        WHERE image_url IS NOT NULL AND TRIM(image_url) <> '';
+      `);
+
+      await client.query(`ALTER TABLE product_variants DROP COLUMN IF EXISTS image_url`);
+      console.log('Migrated legacy image_url data into images array y se eliminó la columna image_url');
+    }
     
     const createVariantImages = `
       CREATE TABLE IF NOT EXISTS product_variant_images (

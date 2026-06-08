@@ -305,7 +305,11 @@ export async function adminCreateVariantHandler(req: AuthRequest, res: Response)
       option_values: body.option_values && typeof body.option_values === 'object' ? body.option_values : {},
       price,
       stock,
-      image_url: body.image_url ?? null,
+      images: Array.isArray(body.images)
+        ? body.images.filter((img: unknown) =>
+            img && typeof img === 'object' && typeof (img as { url?: unknown }).url === 'string',
+          )
+        : undefined,
       weight_grams: body.weight_grams ?? null,
       dimensions: body.dimensions ?? null,
       status: body.status ?? 'active',
@@ -335,7 +339,11 @@ export async function adminUpdateVariantHandler(req: AuthRequest, res: Response)
       option_values: body.option_values && typeof body.option_values === 'object' ? body.option_values : undefined,
       price,
       stock,
-      image_url: body.image_url,
+      images: Array.isArray(body.images)
+        ? body.images.filter((img: unknown) =>
+            img && typeof img === 'object' && typeof (img as { url?: unknown }).url === 'string',
+          )
+        : undefined,
       weight_grams: body.weight_grams,
       dimensions: body.dimensions,
       status: body.status,
