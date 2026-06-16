@@ -17,6 +17,17 @@ import paymentRoutes from './routes/paymentRoutes';
 const app = express();
 const PORT = parseInt(process.env.PORT || '4000', 10);
 
+// ─── Red de seguridad global ─────────────────────────────────
+// Loguea errores inesperados de forma legible en vez del volcado gigante.
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason instanceof Error ? reason.message : reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err.message);
+  // Salimos limpio para que Railway reinicie con un estado sano.
+  process.exit(1);
+});
+
 // ─── Validación de entorno en producción ────────────────────
 if (process.env.NODE_ENV === 'production') {
   const urlVars = ['API_BASE_URL', 'VERIFICATION_BASE_URL'] as const;
