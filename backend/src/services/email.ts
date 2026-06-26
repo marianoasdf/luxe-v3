@@ -89,8 +89,8 @@ export async function sendOrderConfirmationEmail({
   originalTotal = 0,
 }: TransferInstructionsParams): Promise<unknown> {
   const subject = 'Gracias por comprar en Luxe';
-  
-  // Generar detalle de productos como líneas de texto con <br>
+  const orderUrl = `${getBaseUrl()}/transfer-confirmation?orderId=${orderId}`;
+
   const itemsDetail = Array.isArray(items)
     ? items.map((item) => {
         const nombre = item.title || item.name || item.nombre || 'Producto';
@@ -101,8 +101,8 @@ export async function sendOrderConfirmationEmail({
         const cantidad = item.quantity || item.cantidad || 1;
         const precio = item.unit_price || item.price || item.precio || 0;
         const varianteStr = variante ? `(${variante})` : '';
-        return `${cantidad} x ${nombre}${varianteStr} por ${formatCurrency(precio, currency)} cada uno.<br>`;
-      }).join('')
+        return `${cantidad} x ${nombre}${varianteStr} por ${formatCurrency(precio, currency)} cada uno.`;
+      }).join('<br>')
     : '';
 
   const html =
@@ -112,13 +112,17 @@ export async function sendOrderConfirmationEmail({
     '<br>' +
     itemsDetail +
     '<br>' +
+    '<br>' +
     `Costo de envío: ${formatCurrency(shipping_cost, currency)}<br>` +
     `Descuento por Transferencia o depósito bancario: ${formatCurrency(discount, currency)}<br>` +
     '<br>' +
     `Total: ${formatCurrency(amount, currency)}<br>` +
     '<br>' +
-    'Estamos esperando la confirmación del pago, que puede demorar hasta 72hs hábiles (esto puede variar dependiendo del medio de pago elegido. La validación del pago con tarjeta de crédito suele ser instantánea).<br>' +
+    'Estamos esperando la confirmación del pago, que puede demorar hasta 72hs hábiles (esto puede variar dependiendo del medio de pago elegido).<br>' +
     'No te preocupes, te vamos a enviar un mensaje cuando esto suceda.<br>' +
+    '<br>' +
+    'Seguí el estado de tu pedido desde este link:<br>' +
+    `<a href="${orderUrl}">${orderUrl}</a><br>` +
     '<br>' +
     'Saludos,<br>Luxe<br>' +
     '<br>' +
@@ -128,7 +132,8 @@ export async function sendOrderConfirmationEmail({
   if (!shouldSendReal()) {
     console.log(`[email DEV] Confirmacion de compra para ${to}:`);
     console.log(`  Orden: ${orderId}`);
-    return { dev: true, to, subject };
+    console.log(`  Link: ${orderUrl}`);
+    return { dev: true, to, subject, orderUrl };
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
