@@ -444,7 +444,7 @@ export default function Header() {
                 3 cuotas sin interés
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Transferencia">💸</span>
-                20% OFF con transferencia
+                10% OFF con transferencia
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Camión">🚚</span>
                 Envíos gratis desde $150.000
@@ -454,7 +454,7 @@ export default function Header() {
                 3 cuotas sin interés
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Transferencia">💸</span>
-                20% OFF con transferencia
+                10% OFF con transferencia
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Camión">🚚</span>
                 Envíos gratis desde $150.000
@@ -469,7 +469,7 @@ export default function Header() {
             3 cuotas sin interés
             <span className="mx-2 text-[#7a5c2e]">|</span>
             <span role="img" aria-label="Transferencia">💸</span>
-            20% OFF con transferencia
+            10% OFF con transferencia
             <span className="mx-2 text-[#7a5c2e]">|</span>
             <span role="img" aria-label="Camión">🚚</span>
             Envíos gratis desde $150.000

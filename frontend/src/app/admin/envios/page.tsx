@@ -195,7 +195,7 @@ export default function AdminEnviosPage() {
                 }
                 return formatoPrecio(0);
               })()}</div>
-              <div><span className="text-neutral-500">Pago:</span> {o.payment_method === 'transfer' ? 'Transferencia' : 'MP'}{o.discount_applied && o.discount_applied > 0 ? ' (-20%)' : ''}</div>
+              <div><span className="text-neutral-500">Pago:</span> {o.payment_method === 'transfer' ? 'Transferencia' : 'MP'}{o.discount_applied && o.discount_applied > 0 && o.original_amount ? ` (-${Math.round((o.discount_applied / o.original_amount) * 100)}%)` : ''}</div>
               <div><span className="text-neutral-500">Envío:</span> {o.envio_tipo === 'correo_argentino' ? 'Correo Argentino' : o.envio_tipo === 'concordia_gratis' ? 'Concordia' : o.envio_tipo === 'retiro_local' ? 'Retiro local' : '-'}</div>
               <div><span className="text-neutral-500">Tracking:</span> <span className="break-all">{o.envio_tracking || '-'}</span></div>
               <div><span className="text-neutral-500">Fecha:</span> {formatDate(o.created_at)}</div>
@@ -284,9 +284,9 @@ export default function AdminEnviosPage() {
                 <td className="px-3 py-2"><span className={`px-2 py-0.5 rounded-full text-xs ${statusColor(o.status)}`}>{getStatusLabel(o.status)}</span></td>
                 <td className="px-3 py-2">
                   <span className="text-xs">{o.payment_method === 'transfer' ? 'Transferencia' : 'MP'}</span>
-                  {o.discount_applied && o.discount_applied > 0 && (
-                    <span className="text-xs text-green-600 ml-1">(-20%)</span>
-                  )}
+                  {o.discount_applied && o.discount_applied > 0 && o.original_amount ? (
+                    <span className="text-xs text-green-600 ml-1">(-{Math.round((o.discount_applied / o.original_amount) * 100)}%)</span>
+                  ) : null}
                 </td>
                 <td className="px-3 py-2">
                   {o.envio_tipo === 'correo_argentino' && (

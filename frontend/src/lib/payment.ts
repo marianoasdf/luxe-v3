@@ -75,7 +75,7 @@ export function calculateTransferDiscount(
       discount: 0,
     };
   }
-  const discounted = Math.round(amount * 0.8 * 100) / 100;
+  const discounted = Math.round(amount * 0.9 * 100) / 100;
   return {
     original: amount,
     discounted,

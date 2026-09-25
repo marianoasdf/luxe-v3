@@ -23,6 +23,9 @@ import type { Response } from 'express';
 import pool from '../config/db';
 import type { AuthRequest } from '../types';
 import { sendOrderStatusUpdateEmail, sendOrderConfirmationEmail } from '../services/email';
+import { calculateShippingQuote } from '../services/shippingService';
+
+const TRANSFER_DISCOUNT_RATE = 0.1;
 
 // Actualizar estado de una orden (solo admin)
 export async function adminUpdateOrderStatus(req: AuthRequest, res: Response): Promise<void> {
@@ -105,8 +108,6 @@ export async function createTransferOrder(req: AuthRequest, res: Response): Prom
       buyer_address,
       buyer_phone,
       items,
-      subtotal,
-      shipping_cost,
       shipping_method,
       currency = 'ARS'
     } = req.body;
@@ -121,17 +122,39 @@ export async function createTransferOrder(req: AuthRequest, res: Response): Prom
     const subtotal_calc = Array.isArray(items)
       ? items.reduce((acc, it) => acc + Number(it.unit_price || 0) * Number(it.quantity || 1), 0)
       : 0;
-    const shipping = Number(shipping_cost || 0);
-    const originalTotal = subtotal_calc + shipping; // total sin descuento
-    const finalTotal = Math.round(originalTotal * 0.8 * 100) / 100; // total con descuento aplicado
-    const discount = originalTotal - finalTotal;
 
-    // Inyectar el teléfono en buyer_address si no está
     let buyerAddressObj: any = {};
     try {
       buyerAddressObj = typeof buyer_address === 'string' ? JSON.parse(buyer_address) : { ...buyer_address };
     } catch { buyerAddressObj = {}; }
     if (buyer_phone && !buyerAddressObj.phone) buyerAddressObj.phone = buyer_phone;
+
+    let shippingQuote;
+    try {
+      shippingQuote = await calculateShippingQuote({
+        shipping: {
+          method: String(shipping_method || 'retiro_local'),
+          city: String(buyerAddressObj?.city ?? ''),
+          province: String(buyerAddressObj?.province ?? ''),
+          postalCode: String(buyerAddressObj?.zip ?? buyerAddressObj?.postalCode ?? ''),
+          addressLine: String(buyerAddressObj?.street ?? buyerAddressObj?.addressLine ?? ''),
+          reference: '',
+          provider: '',
+          cost: 0,
+        },
+        items,
+        subtotal: subtotal_calc,
+      });
+    } catch (quoteError) {
+      const quoteMsg = quoteError instanceof Error ? quoteError.message : 'No se pudo calcular el envio';
+      res.status(400).json({ error: quoteMsg });
+      return;
+    }
+
+    const shipping = Number(shippingQuote.cost || 0);
+    const originalTotal = subtotal_calc + shipping;
+    const finalTotal = Math.round(originalTotal * (1 - TRANSFER_DISCOUNT_RATE) * 100) / 100;
+    const discount = Math.round((originalTotal - finalTotal) * 100) / 100;
 
     // Crear la orden en estado pending
     const { rows } = await pool.query(
@@ -149,7 +172,7 @@ export async function createTransferOrder(req: AuthRequest, res: Response): Prom
         buyer_phone,
         finalTotal, // total_amount: total FINAL (con descuento aplicado)
         JSON.stringify(items),
-        shipping_method,
+        shippingQuote.method,
         shipping,
         currency,
         'transfer',
@@ -169,7 +192,7 @@ export async function createTransferOrder(req: AuthRequest, res: Response): Prom
         amount: finalTotal,
         currency: currency,
         items,
-        shipping_cost,
+        shipping_cost: shipping,
         discount: discount,
         originalTotal: originalTotal,
       });

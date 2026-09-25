@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { formatoPrecio } from '@/lib/utils';
+import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
 
 interface TransferConfig {
   alias: string;
@@ -60,7 +61,7 @@ export default function TransferPayment({ orderId, amount, currency, expiresAt }
 
       {/* Monto */}
       <div className="bg-white rounded-lg p-4 border border-amber-200">
-        <p className="text-sm text-neutral-600 mb-1">Monto a transferir (con 20% de descuento):</p>
+        <p className="text-sm text-neutral-600 mb-1">Monto a transferir (con {TRANSFER_DISCOUNT_PERCENT}% de descuento):</p>
         <p className="text-3xl font-bold text-green-600">{formatoPrecio(amount)}</p>
       </div>
 

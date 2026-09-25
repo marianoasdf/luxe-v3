@@ -68,9 +68,13 @@ export function normalizeShippingInput(
   rawShipping: Record<string, unknown> = {},
 ): ShippingInput {
   const method = String(rawShipping.method ?? 'retiro_local').toLowerCase();
+  const provider =
+    method === 'correo_argentino' || method === 'concordia_gratis'
+      ? method
+      : 'retiro_local';
   return {
     method,
-    provider: method === 'correo_argentino' ? 'correo_argentino' : 'retiro_local',
+    provider,
     postalCode: normalizePostalCode(rawShipping.postalCode ?? rawShipping.cp),
     province: String(rawShipping.province ?? '').trim(),
     city: String(rawShipping.city ?? '').trim(),
@@ -315,6 +319,24 @@ export async function calculateShippingQuote(
       etaDays: '0',
       source: 'fixed_table',
       shipping: normalizedShipping,
+    };
+  }
+
+  if (normalizedShipping.method === 'concordia_gratis') {
+    const city = normalizeText(normalizedShipping.city);
+    if (city !== 'concordia') {
+      throw new Error('El envio gratis a Concordia solo aplica en Concordia');
+    }
+    return {
+      provider: 'concordia_gratis',
+      method: 'concordia_gratis',
+      serviceCode: 'concordia_gratis',
+      serviceName: 'Envio gratis a Concordia',
+      zone: 'Concordia',
+      cost: 0,
+      etaDays: '1-2',
+      source: 'concordia_gratis',
+      shipping: { ...normalizedShipping, cost: 0 },
     };
   }
 

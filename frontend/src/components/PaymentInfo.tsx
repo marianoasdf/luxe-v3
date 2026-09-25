@@ -1,4 +1,5 @@
 import { formatoPrecio } from '@/lib/utils';
+import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
 
 interface PaymentInfoProps {
   price: number;
@@ -47,7 +48,7 @@ export default function PaymentInfo({ price }: PaymentInfoProps) {
       <div className="flex items-center gap-3">
         <IconoBillete />
         <p className="text-[14px] text-neutral-800 leading-none">
-          <span className="font-semibold text-neutral-900">20% de descuento</span> pagando con Transferencia o depósito
+          <span className="font-semibold text-neutral-900">{TRANSFER_DISCOUNT_PERCENT}% de descuento</span> pagando con Transferencia o depósito
         </p>
       </div>
 

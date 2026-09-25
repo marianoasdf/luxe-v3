@@ -15,7 +15,8 @@ import {
   calcularEnvio,
   calcularDescuentoTransferencia,
   calcularTotalOriginal,
-  calcularTotalConDescuento
+  calcularTotalConDescuento,
+  TRANSFER_DISCOUNT_PERCENT,
 } from '@/lib/pricing';
 
 // Configuración de envío gratis
@@ -646,7 +647,7 @@ export default function CheckoutPage() {
                   >
                     <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <span className="font-medium">Pagar con transferencia bancaria</span>
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">20% OFF</span>
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{TRANSFER_DISCOUNT_PERCENT}% OFF</span>
                     </div>
                     <p className="text-sm text-green-600 mt-1 text-left">
                       Ahorra {formatoPrecio(discount)} - Total: {formatoPrecio(transferTotal)}
@@ -741,7 +742,7 @@ export default function CheckoutPage() {
             {mounted && paymentMethodSelected === 'transfer' && (
               <>
                 <div className="text-sm text-neutral-400 line-through">Total: {formatoPrecio(originalTotal)}</div>
-                <div className="text-sm text-green-600">Descuento (20%): -{formatoPrecio(discount)}</div>
+                <div className="text-sm text-green-600">Descuento ({TRANSFER_DISCOUNT_PERCENT}%): -{formatoPrecio(discount)}</div>
               </>
             )}
             <div className="font-semibold text-lg">Total: {mounted ? formatoPrecio(total) : ''}</div>

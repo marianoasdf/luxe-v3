@@ -396,7 +396,7 @@ export default function MiCuentaPage() {
                     {/* Descuento con porcentaje si es 20% */}
                     {(orderDetail.discount_applied !== undefined && orderDetail.discount_applied !== null && orderDetail.discount_applied > 0) && (
                       <div className="flex justify-between text-sm">
-                        <span>Descuento{orderDetail.original_amount && Math.abs(orderDetail.discount_applied / orderDetail.original_amount - 0.2) < 0.01 ? ' (20%)' : ''}:</span>
+                        <span>Descuento{orderDetail.original_amount ? ` (${Math.round((orderDetail.discount_applied / orderDetail.original_amount) * 100)}%)` : ''}:</span>
                         <span className="text-green-700">- {formatoPrecio(orderDetail.discount_applied)}</span>
                       </div>
                     )}

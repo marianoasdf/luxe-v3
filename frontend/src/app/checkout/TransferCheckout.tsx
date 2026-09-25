@@ -1,5 +1,6 @@
 
 import { formatoPrecio } from '@/lib/utils';
+import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
 
 interface TransferCheckoutProps {
   subtotal: number;
@@ -29,7 +30,7 @@ export default function TransferCheckout({
     <div className="space-y-4">
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h4 className="font-medium text-green-800 mb-2">
-          Pago por transferencia bancaria (20% de descuento)
+          Pago por transferencia bancaria ({TRANSFER_DISCOUNT_PERCENT}% de descuento)
         </h4>
         <div className="space-y-1 text-sm">
           <div className="flex justify-between">
@@ -47,7 +48,7 @@ export default function TransferCheckout({
             <span className="line-through text-neutral-400">{formatoPrecio(originalTotal)}</span>
           </div>
           <div className="flex justify-between text-green-700">
-            <span>Descuento (20%):</span>
+            <span>Descuento ({TRANSFER_DISCOUNT_PERCENT}%):</span>
             <span>-{formatoPrecio(discount)}</span>
           </div>
           <div className="flex justify-between border-t border-green-200 pt-2 mt-2">
