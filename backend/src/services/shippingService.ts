@@ -3,15 +3,17 @@ import type { ShippingInput, ShippingQuote, FixedRate, OrderRow } from '../types
 
 // ─── Constants ──────────────────────────────────────────────
 
+// PAQ.AR Clásico a domicilio, cotizado en MiCorreo el 27/09/2026
+// desde Concordia (3200), paquete 30x25x7 cm, 0,450 kg.
 const FIXED_RATES: FixedRate[] = [
-  { zone: 'AMBA', min: 1000, max: 1899, cost: 5500, etaDays: '1-3' },
-  { zone: 'Centro', min: 1900, max: 2999, cost: 6900, etaDays: '2-4' },
-  { zone: 'Litoral', min: 3000, max: 3999, cost: 7600, etaDays: '3-5' },
-  { zone: 'NOA', min: 4000, max: 4999, cost: 8400, etaDays: '3-6' },
-  { zone: 'Cuyo', min: 5000, max: 5999, cost: 7900, etaDays: '3-5' },
-  { zone: 'Pampeana', min: 6000, max: 6999, cost: 7200, etaDays: '2-4' },
-  { zone: 'Sur', min: 7000, max: 7999, cost: 9300, etaDays: '4-7' },
-  { zone: 'Patagonia', min: 8000, max: 9999, cost: 10900, etaDays: '5-8' },
+  { zone: 'AMBA', min: 1000, max: 1899, cost: 9648, etaDays: '2-5' },
+  { zone: 'Centro', min: 1900, max: 2999, cost: 9648, etaDays: '2-5' },
+  { zone: 'Litoral', min: 3000, max: 3999, cost: 9648, etaDays: '2-5' },
+  { zone: 'NOA', min: 4000, max: 4999, cost: 10509, etaDays: '2-5' },
+  { zone: 'Cuyo', min: 5000, max: 5999, cost: 9648, etaDays: '2-5' },
+  { zone: 'Pampeana', min: 6000, max: 6999, cost: 10509, etaDays: '2-5' },
+  { zone: 'Sur', min: 7000, max: 7999, cost: 9648, etaDays: '2-5' },
+  { zone: 'Patagonia', min: 8000, max: 9999, cost: 10586, etaDays: '2-5' },
 ];
 
 const PROVINCE_CODES: Record<string, string> = {
@@ -89,7 +91,7 @@ function inferZoneByPostalCode(
 ): { zone: string; cost: number; etaDays: string } {
   const cp = toNumber(postalCode, 0);
   const found = FIXED_RATES.find((rate) => cp >= rate.min && cp <= rate.max);
-  return found ?? { zone: 'General', cost: 8500, etaDays: '3-6' };
+  return found ?? { zone: 'General', cost: 10586, etaDays: '2-5' };
 }
 
 function estimatePackageMetrics(items: Array<Record<string, unknown>> = []) {
