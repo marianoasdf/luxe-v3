@@ -346,6 +346,15 @@ async function main(): Promise<void> {
     
         await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_applied NUMERIC(12,2);`);
         console.log('Asegurada columna "discount_applied" en orders');
+
+        await client.query(`
+          CREATE TABLE IF NOT EXISTS store_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+          );
+        `);
+        console.log('Tabla "store_settings" creada o ya existe');
     
         await seedProducts();
   } catch (err: unknown) {

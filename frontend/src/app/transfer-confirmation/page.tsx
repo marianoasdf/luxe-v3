@@ -11,6 +11,8 @@ interface TransferOrderDetails {
   id: number;
   status: string;
   total_amount: number;
+  original_amount: number;
+  discount_applied: number;
   currency: string;
   created_at: string;
   expiresAt: string;
@@ -127,6 +129,11 @@ function TransferConfirmationPageInner() {
       <TransferPayment
         orderId={orderDetails.id}
         amount={Number(orderDetails.total_amount)}
+        discountPercent={
+          Number(orderDetails.original_amount) > 0
+            ? Math.round((Number(orderDetails.discount_applied) / Number(orderDetails.original_amount)) * 100)
+            : 0
+        }
         currency={orderDetails.currency}
         expiresAt={orderDetails.expiresAt}
       />

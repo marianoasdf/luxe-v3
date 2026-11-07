@@ -24,8 +24,7 @@ import pool from '../config/db';
 import type { AuthRequest } from '../types';
 import { sendOrderStatusUpdateEmail, sendOrderConfirmationEmail } from '../services/email';
 import { calculateShippingQuote } from '../services/shippingService';
-
-const TRANSFER_DISCOUNT_RATE = 0.1;
+import { getTransferDiscountPercent } from '../services/settingsService';
 
 // Actualizar estado de una orden (solo admin)
 export async function adminUpdateOrderStatus(req: AuthRequest, res: Response): Promise<void> {
@@ -153,7 +152,8 @@ export async function createTransferOrder(req: AuthRequest, res: Response): Prom
 
     const shipping = Number(shippingQuote.cost || 0);
     const originalTotal = subtotal_calc + shipping;
-    const finalTotal = Math.round(originalTotal * (1 - TRANSFER_DISCOUNT_RATE) * 100) / 100;
+    const discountPercent = await getTransferDiscountPercent();
+    const finalTotal = Math.round(originalTotal * (1 - discountPercent / 100) * 100) / 100;
     const discount = Math.round((originalTotal - finalTotal) * 100) / 100;
 
     // Crear la orden en estado pending

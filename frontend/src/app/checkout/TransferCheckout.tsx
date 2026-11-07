@@ -1,12 +1,12 @@
 
 import { formatoPrecio } from '@/lib/utils';
-import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
 
 interface TransferCheckoutProps {
   subtotal: number;
   shippingCost: number;
   originalTotal: number;
   discount: number;
+  discountPercent: number;
   totalConDescuento: number;
   onCancel: () => void;
   onConfirm: () => void;
@@ -19,6 +19,7 @@ export default function TransferCheckout({
   shippingCost,
   originalTotal,
   discount,
+  discountPercent,
   totalConDescuento,
   onCancel,
   onConfirm,
@@ -30,7 +31,7 @@ export default function TransferCheckout({
     <div className="space-y-4">
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h4 className="font-medium text-green-800 mb-2">
-          Pago por transferencia bancaria ({TRANSFER_DISCOUNT_PERCENT}% de descuento)
+          Pago por transferencia bancaria{discount > 0 ? ` (${discountPercent}% de descuento)` : ''}
         </h4>
         <div className="space-y-1 text-sm">
           <div className="flex justify-between">
@@ -43,14 +44,18 @@ export default function TransferCheckout({
               <span>{formatoPrecio(shippingCost)}</span>
             </div>
           )}
-          <div className="flex justify-between">
-            <span className="text-neutral-600">Total original:</span>
-            <span className="line-through text-neutral-400">{formatoPrecio(originalTotal)}</span>
-          </div>
-          <div className="flex justify-between text-green-700">
-            <span>Descuento ({TRANSFER_DISCOUNT_PERCENT}%):</span>
-            <span>-{formatoPrecio(discount)}</span>
-          </div>
+          {discount > 0 && (
+            <>
+              <div className="flex justify-between">
+                <span className="text-neutral-600">Total original:</span>
+                <span className="line-through text-neutral-400">{formatoPrecio(originalTotal)}</span>
+              </div>
+              <div className="flex justify-between text-green-700">
+                <span>Descuento ({discountPercent}%):</span>
+                <span>-{formatoPrecio(discount)}</span>
+              </div>
+            </>
+          )}
           <div className="flex justify-between border-t border-green-200 pt-2 mt-2">
             <span className="font-medium">Total a pagar:</span>
             <span className="font-bold text-xl text-green-700">{formatoPrecio(totalConDescuento)}</span>

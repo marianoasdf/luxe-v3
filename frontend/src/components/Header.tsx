@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { cdnImage, formatTalle, formatoPrecio } from '@/lib/utils';
+import { useTransferDiscount } from '@/lib/transferDiscount';
 
 const cartImageFallback = 'https://picsum.photos/120/120?grayscale&blur=1';
 
@@ -54,6 +55,15 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const transferDiscount = useTransferDiscount();
+  const transferPromo = transferDiscount !== null && transferDiscount > 0 ? (
+    <>
+      <span className="mx-2 text-[#7a5c2e]">|</span>
+      <span role="img" aria-label="Transferencia">💸</span>
+      {transferDiscount}% OFF con transferencia
+    </>
+  ) : null;
+
   const tickerRef = useRef<HTMLDivElement>(null);
   // --- PROMO TICKER ---
   useEffect(() => {
@@ -86,7 +96,7 @@ export default function Header() {
     }
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [transferDiscount]);
 
   const navContent = (
       <div className="relative max-w-7xl mx-auto flex h-full items-center justify-between px-4 md:px-8">
@@ -442,9 +452,7 @@ export default function Header() {
               <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none px-2">
                 <span role="img" aria-label="Tarjeta">💳</span>
                 3 cuotas sin interés
-                <span className="mx-2 text-[#7a5c2e]">|</span>
-                <span role="img" aria-label="Transferencia">💸</span>
-                10% OFF con transferencia
+                {transferPromo}
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Camión">🚚</span>
                 Envíos gratis desde $150.000
@@ -452,9 +460,7 @@ export default function Header() {
               <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none px-2">
                 <span role="img" aria-label="Tarjeta">💳</span>
                 3 cuotas sin interés
-                <span className="mx-2 text-[#7a5c2e]">|</span>
-                <span role="img" aria-label="Transferencia">💸</span>
-                10% OFF con transferencia
+                {transferPromo}
                 <span className="mx-2 text-[#7a5c2e]">|</span>
                 <span role="img" aria-label="Camión">🚚</span>
                 Envíos gratis desde $150.000
@@ -467,9 +473,7 @@ export default function Header() {
           <span className="text-[13px] text-[#7a5c2e] font-light flex items-center gap-2 select-none">
             <span role="img" aria-label="Tarjeta">💳</span>
             3 cuotas sin interés
-            <span className="mx-2 text-[#7a5c2e]">|</span>
-            <span role="img" aria-label="Transferencia">💸</span>
-            10% OFF con transferencia
+            {transferPromo}
             <span className="mx-2 text-[#7a5c2e]">|</span>
             <span role="img" aria-label="Camión">🚚</span>
             Envíos gratis desde $150.000

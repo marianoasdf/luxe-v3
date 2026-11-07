@@ -49,19 +49,16 @@ export function calcularEnvio(shippingCost: number): number {
   return safeNumber(shippingCost, 0);
 }
 
-export const TRANSFER_DISCOUNT_RATE = 0.1;
-export const TRANSFER_DISCOUNT_PERCENT = Math.round(TRANSFER_DISCOUNT_RATE * 100);
-
-export function calcularDescuentoTransferencia(totalOriginal: number): number {
-  return Math.round(safeNumber(totalOriginal, 0) * TRANSFER_DISCOUNT_RATE);
+export function calcularDescuentoTransferencia(totalOriginal: number, discountPercent: number): number {
+  return Math.round(safeNumber(totalOriginal, 0) * (safeNumber(discountPercent, 0) / 100));
 }
 
 export function calcularTotalOriginal(subtotal: number, shippingCost: number): number {
   return safeNumber(subtotal, 0) + safeNumber(shippingCost, 0);
 }
 
-export function calcularTotalConDescuento(totalOriginal: number): number {
-  return Math.round(safeNumber(totalOriginal, 0) * (1 - TRANSFER_DISCOUNT_RATE));
+export function calcularTotalConDescuento(totalOriginal: number, discountPercent: number): number {
+  return Math.round(safeNumber(totalOriginal, 0) * (1 - safeNumber(discountPercent, 0) / 100));
 }
 
 export function calcularTotalSinDescuento(totalOriginal: number): number {

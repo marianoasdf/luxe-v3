@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { cdnImage } from '@/lib/utils';
 import { authFetch } from '@/lib/api';
 import VariantsManager from '@/components/VariantsManager';
+import TransferDiscountSetting from '@/components/TransferDiscountSetting';
 
 function useAdminSecret(): [string, (s: string) => void] {
   const [secret, setSecret] = useState(() =>
@@ -285,6 +286,8 @@ export default function AdminProductsPage() {
         <label className="block text-sm font-medium mb-1">Admin Secret</label>
         <input type="password" className="min-h-11 w-full max-w-lg border rounded-lg px-3 py-2" value={secret} onChange={(e) => setSecret(e.target.value)} placeholder="Pegá el ADMIN_SECRET" />
       </div>
+
+      <TransferDiscountSetting secret={secret} />
 
       {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 

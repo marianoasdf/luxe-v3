@@ -59,26 +59,3 @@ export async function createTransferOrder(
 
   return data;
 }
-
-export function calculateTransferDiscount(
-  amount: number, 
-  applyDiscount: boolean = true
-): {
-  original: number;
-  discounted: number;
-  discount: number;
-} {
-  if (!applyDiscount) {
-    return {
-      original: amount,
-      discounted: amount,
-      discount: 0,
-    };
-  }
-  const discounted = Math.round(amount * 0.9 * 100) / 100;
-  return {
-    original: amount,
-    discounted,
-    discount: Math.round((amount - discounted) * 100) / 100,
-  };
-}

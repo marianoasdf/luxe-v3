@@ -19,6 +19,7 @@ import {
 import { getSignature } from '../controllers/cloudinaryController';
 import { adminListOrders, adminGetOrder } from '../controllers/shippingController';
 import { adminUpdateOrderStatus } from '../controllers/orderController';
+import { adminUpdateTransferDiscount } from '../controllers/settingsController';
 
 const router = Router();
 
@@ -79,6 +80,9 @@ router.post('/admin/cloudinary/signature', adminCheck, getSignature);
 router.get('/admin/orders', adminCheck, adminListOrders);
 router.get('/admin/orders/:id', adminCheck, adminGetOrder);
 router.put('/admin/orders/:id/status', adminCheck, adminUpdateOrderStatus);
+
+// Configuración de la tienda
+router.put('/admin/settings/transfer-discount', adminCheck, adminUpdateTransferDiscount);
 
 export default router;
 

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { formatoPrecio } from '@/lib/utils';
-import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
 
 interface TransferConfig {
   alias: string;
@@ -14,6 +13,7 @@ interface TransferConfig {
 interface TransferPaymentProps {
   orderId: number;
   amount: number;
+  discountPercent: number;
   currency: string;
   expiresAt: string;
 }
@@ -26,7 +26,7 @@ const TRANSFER_CONFIG: TransferConfig = {
   holderCuit: process.env.NEXT_PUBLIC_TRANSFER_HOLDER_CUIT || 'XX-XXXXXXXX-X',
 };
 
-export default function TransferPayment({ orderId, amount, currency, expiresAt }: TransferPaymentProps) {
+export default function TransferPayment({ orderId, amount, discountPercent, currency, expiresAt }: TransferPaymentProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   
   const expiryDate = new Date(expiresAt).toLocaleDateString('es-AR', {
@@ -61,7 +61,7 @@ export default function TransferPayment({ orderId, amount, currency, expiresAt }
 
       {/* Monto */}
       <div className="bg-white rounded-lg p-4 border border-amber-200">
-        <p className="text-sm text-neutral-600 mb-1">Monto a transferir (con {TRANSFER_DISCOUNT_PERCENT}% de descuento):</p>
+        <p className="text-sm text-neutral-600 mb-1">Monto a transferir{discountPercent > 0 ? ` (con ${discountPercent}% de descuento)` : ''}:</p>
         <p className="text-3xl font-bold text-green-600">{formatoPrecio(amount)}</p>
       </div>
 

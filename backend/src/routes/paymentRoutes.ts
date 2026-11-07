@@ -2,11 +2,13 @@ import { Router } from 'express';
 import { createPreference, createPayment, webhookMercadoPago, getOrder, listOrders } from '../controllers/paymentController';
 import { quoteShipping } from '../controllers/shippingController';
 import { createTransferOrder, getTransferOrderDetails } from '../controllers/orderController';
+import { getTransferDiscount } from '../controllers/settingsController';
 
 const router = Router();
 
 router.post('/payments/preference', createPreference);
 router.post('/payments/charge', createPayment);
+router.get('/payments/transfer-discount', getTransferDiscount);
 router.post('/payments/transfer', createTransferOrder);
 router.get('/payments/transfer/:id', getTransferOrderDetails);
 router.post('/shipping/quote', quoteShipping);

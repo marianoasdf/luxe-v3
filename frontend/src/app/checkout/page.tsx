@@ -16,8 +16,8 @@ import {
   calcularDescuentoTransferencia,
   calcularTotalOriginal,
   calcularTotalConDescuento,
-  TRANSFER_DISCOUNT_PERCENT,
 } from '@/lib/pricing';
+import { useTransferDiscount } from '@/lib/transferDiscount';
 
 // Configuración de envío gratis
 const FREE_SHIPPING_THRESHOLD = 150000;
@@ -199,8 +199,9 @@ export default function CheckoutPage() {
   const subtotalCalc = subtotal;
   const shippingCalc = calcularEnvio(shippingCost);
   const originalTotal = calcularTotalOriginal(subtotalCalc, shippingCalc);
-  const discount = calcularDescuentoTransferencia(originalTotal);
-  const transferTotal = calcularTotalConDescuento(originalTotal);
+  const transferDiscountPercent = useTransferDiscount() ?? 0;
+  const discount = calcularDescuentoTransferencia(originalTotal, transferDiscountPercent);
+  const transferTotal = calcularTotalConDescuento(originalTotal, transferDiscountPercent);
   // El total actual depende del metodo seleccionado
   const total = paymentMethodSelected === 'transfer' ? transferTotal : originalTotal;
   const buyerReady = Boolean(form.nombre.trim() && form.email.trim() && form.telefono.trim());
@@ -647,10 +648,12 @@ export default function CheckoutPage() {
                   >
                     <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <span className="font-medium">Pagar con transferencia bancaria</span>
-                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{TRANSFER_DISCOUNT_PERCENT}% OFF</span>
+                      {transferDiscountPercent > 0 && (
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{transferDiscountPercent}% OFF</span>
+                      )}
                     </div>
                     <p className="text-sm text-green-600 mt-1 text-left">
-                      Ahorra {formatoPrecio(discount)} - Total: {formatoPrecio(transferTotal)}
+                      {discount > 0 ? `Ahorra ${formatoPrecio(discount)} - ` : ''}Total: {formatoPrecio(transferTotal)}
                     </p>
                   </button>
                 </div>
@@ -704,6 +707,7 @@ export default function CheckoutPage() {
                     shippingCost={shippingCalc}
                     originalTotal={originalTotal}
                     discount={discount}
+                    discountPercent={transferDiscountPercent}
                     totalConDescuento={transferTotal}
                     onCancel={() => setPaymentMethodSelected(null)}
                     onConfirm={handleTransferConfirm}
@@ -739,10 +743,10 @@ export default function CheckoutPage() {
           <div className="text-right space-y-1 border-t border-neutral-200 pt-3">
             <div className="text-sm text-neutral-500">Subtotal: {mounted ? formatoPrecio(subtotalCalc) : ''}</div>
             <div className="text-sm text-neutral-500">Envío: {mounted ? formatoPrecio(shippingCalc) : ''}</div>
-            {mounted && paymentMethodSelected === 'transfer' && (
+            {mounted && paymentMethodSelected === 'transfer' && discount > 0 && (
               <>
                 <div className="text-sm text-neutral-400 line-through">Total: {formatoPrecio(originalTotal)}</div>
-                <div className="text-sm text-green-600">Descuento ({TRANSFER_DISCOUNT_PERCENT}%): -{formatoPrecio(discount)}</div>
+                <div className="text-sm text-green-600">Descuento ({transferDiscountPercent}%): -{formatoPrecio(discount)}</div>
               </>
             )}
             <div className="font-semibold text-lg">Total: {mounted ? formatoPrecio(total) : ''}</div>

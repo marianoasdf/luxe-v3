@@ -1,11 +1,14 @@
+'use client';
+
 import { formatoPrecio } from '@/lib/utils';
-import { TRANSFER_DISCOUNT_PERCENT } from '@/lib/pricing';
+import { useTransferDiscount } from '@/lib/transferDiscount';
 
 interface PaymentInfoProps {
   price: number;
 }
 
 export default function PaymentInfo({ price }: PaymentInfoProps) {
+  const transferDiscount = useTransferDiscount();
   // Cálculos Luxe
   const cuotas = 3;
   const valorCuota = price / cuotas;
@@ -45,12 +48,14 @@ export default function PaymentInfo({ price }: PaymentInfoProps) {
       </div>
 
       {/* Transferencia con Billete Real y Texto Simplificado */}
-      <div className="flex items-center gap-3">
-        <IconoBillete />
-        <p className="text-[14px] text-neutral-800 leading-none">
-          <span className="font-semibold text-neutral-900">{TRANSFER_DISCOUNT_PERCENT}% de descuento</span> pagando con Transferencia o depósito
-        </p>
-      </div>
+      {transferDiscount !== null && transferDiscount > 0 && (
+        <div className="flex items-center gap-3">
+          <IconoBillete />
+          <p className="text-[14px] text-neutral-800 leading-none">
+            <span className="font-semibold text-neutral-900">{transferDiscount}% de descuento</span> pagando con Transferencia o depósito
+          </p>
+        </div>
+      )}
 
       <div className="flex items-center gap-3">
         <IconoEnvioGratis />
