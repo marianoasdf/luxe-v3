@@ -35,7 +35,6 @@ interface OrderRow {
   envio_tipo?: string; // frontend mapping
   envio_estado?: string;
   envio_tracking?: string;
-  envio_label_url?: string;
   envio_costo?: number;
   envio_estimacion?: string;
   created_at: string;
@@ -54,7 +53,6 @@ export default function AdminEnviosPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState<OrderRow | null>(null);
-  const [generating, setGenerating] = useState<number | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<number | null>(null);
 
   const headers = useMemo(
@@ -96,21 +94,6 @@ export default function AdminEnviosPage() {
   };
 
   useEffect(() => { fetchOrders(); /* eslint-disable-next-line */ }, [secret]);
-
-  const genLabel = async (orderId: number) => {
-    setGenerating(orderId);
-    setError('');
-    try {
-      const res = await authFetch(`/api/admin/orders/${orderId}/label`, { method: 'POST', headers });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || 'Error generando etiqueta');
-      await fetchOrders();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error');
-    } finally {
-      setGenerating(null);
-    }
-  };
 
   const updateOrderStatus = async (orderId: number, newStatus: 'paid' | 'cancelled') => {
     setUpdatingStatus(orderId);
@@ -212,26 +195,6 @@ export default function AdminEnviosPage() {
                   </button>
                 </>
               )}
-              {o.envio_tipo === 'correo_argentino' && !o.envio_label_url && (
-                <button
-                  className="text-purple-700 hover:underline"
-                  onClick={() => {
-                    if (o.status !== 'paid' && o.status !== 'approved' && o.status !== 'completed') {
-                      alert('Solo disponible para órdenes pagadas');
-                      return;
-                    }
-                    genLabel(o.id);
-                  }}
-                  disabled={generating === o.id}
-                >
-                  {generating === o.id ? 'Gen...' : 'Etiqueta'}
-                </button>
-              )}
-              {o.envio_tipo === 'correo_argentino' && o.envio_label_url && (
-                <a href={o.envio_label_url} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">
-                  Ver etiqueta
-                </a>
-              )}
               {o.envio_tipo === 'concordia_gratis' && (o.shipping_address?.phone || o.buyer_phone) && (() => {
                 const rawPhone = o.shipping_address?.phone || o.buyer_phone || '';
                 const phone = String(rawPhone).replace(/[^0-9]/g, '');
@@ -324,28 +287,6 @@ export default function AdminEnviosPage() {
                     </>
                   )}
                   {/* Acciones específicas por método de envío */}
-                  {o.envio_tipo === 'correo_argentino' && !o.envio_label_url && (
-                    <>
-                      <button
-                        className="text-purple-700 hover:underline text-xs ml-1"
-                        onClick={() => {
-                          if (o.status !== 'paid' && o.status !== 'approved' && o.status !== 'completed') {
-                            alert('Solo disponible para órdenes pagadas');
-                            return;
-                          }
-                          genLabel(o.id);
-                        }}
-                        disabled={generating === o.id}
-                      >
-                        {generating === o.id ? 'Gen...' : 'Etiqueta'}
-                      </button>
-                    </>
-                  )}
-                  {o.envio_tipo === 'correo_argentino' && o.envio_label_url && (
-                    <a href={o.envio_label_url} target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline text-xs ml-1">
-                      Ver etiqueta
-                    </a>
-                  )}
                   {o.envio_tipo === 'concordia_gratis' && (o.shipping_address?.phone || o.buyer_phone) && (() => {
                     const rawPhone = o.shipping_address?.phone || o.buyer_phone || '';
                     const phone = String(rawPhone).replace(/[^0-9]/g, '');
