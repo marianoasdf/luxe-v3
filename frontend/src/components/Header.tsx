@@ -96,6 +96,8 @@ export default function Header() {
     }
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
+    // El porcentaje viene resuelto desde el servidor en el primer render; solo cambia si el admin
+    // lo edita en esta misma sesión, en cuyo caso hay que re-medir el ancho del bloque.
   }, [transferDiscount]);
 
   const navContent = (

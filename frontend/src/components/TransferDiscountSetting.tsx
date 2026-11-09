@@ -4,9 +4,10 @@ import { useEffect, useState, type SubmitEvent } from 'react';
 import { authFetch } from '@/lib/api';
 import {
   MAX_TRANSFER_DISCOUNT_PERCENT,
-  setTransferDiscountCache,
+  useSetTransferDiscount,
   useTransferDiscount,
 } from '@/lib/transferDiscount';
+import { revalidateTransferDiscount } from '@/app/admin/actions';
 
 interface TransferDiscountSettingProps {
   secret: string;
@@ -14,6 +15,7 @@ interface TransferDiscountSettingProps {
 
 export default function TransferDiscountSetting({ secret }: TransferDiscountSettingProps) {
   const current = useTransferDiscount();
+  const setTransferDiscount = useSetTransferDiscount();
   const [value, setValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -44,7 +46,9 @@ export default function TransferDiscountSetting({ secret }: TransferDiscountSett
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || 'Error guardando el descuento');
-      setTransferDiscountCache(data.percent);
+      setTransferDiscount(data.percent);
+      // Invalida la caché del servidor de Next para que el próximo visitante ya vea el nuevo valor.
+      await revalidateTransferDiscount();
       setMessage(data.percent > 0 ? `Guardado: ${data.percent}% OFF con transferencia` : 'Guardado: sin descuento por transferencia');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error');

@@ -4,6 +4,8 @@ import { CartProvider } from '@/contexts/CartContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import { TransferDiscountProvider } from '@/lib/transferDiscount';
+import { getTransferDiscountServer } from '@/lib/server/transferDiscount';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -11,7 +13,9 @@ export const metadata: Metadata = {
   description: 'Local multimarca en Concordia, Entre Ríos. Remeras, buzos, camisas, jeans y más. Envíos a todo el país.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const transferDiscount = await getTransferDiscountServer();
+
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <head>
@@ -30,10 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-white text-neutral-900 antialiased">
         <AuthProvider>
           <CartProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <WhatsAppButton />
+            <TransferDiscountProvider initial={transferDiscount}>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <WhatsAppButton />
+            </TransferDiscountProvider>
           </CartProvider>
         </AuthProvider>
       </body>
